@@ -2,8 +2,7 @@
 
 ## Systematic Mapping Study
 
-Phase   
-<img width="1057" height="613" alt="image" src="https://github.com/user-attachments/assets/9189494c-2860-4559-afd3-2689731faf4a" />
+![mapping](https://github.com/user-attachments/assets/316aa5ae-f84e-465a-b82c-8e44710f3b30)
 
 The literature review (SMS) aims to answer the following research questions (Examples):
 * RQ1. Bagaimana evolusi penelitian Indoor Tag Localization ditinjau dari dukungan serta populasi publikasi dari lima tahun terakhir yaitu 2017-2022?  

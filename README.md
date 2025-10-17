@@ -7,4 +7,4 @@
 The literature review (SMS) aims to answer the following research questions (Examples):
 * <span style="color:red">**RQ1**</span> : Bagaimana evolusi penelitian **Visual Neural Encoding** ditinjau dari dukungan serta populasi publikasi dari lima tahun terakhir yaitu 2017-2022?  
 * <span style="color:blue">**RQ2**</span> : Apa saja yang termasuk pada area topik penelitian **Visual Neural Encoding**? 
-* RQ3 : Bagaimana trend topik dan apa topik saat ini yang merupakan promising research topic pada **Visual Neural Encoding** ? 
+* **RQ3** : Bagaimana trend topik dan apa topik saat ini yang merupakan promising research topic pada **Visual Neural Encoding** ? 

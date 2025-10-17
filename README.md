@@ -1,5 +1,10 @@
 # X-AI for Academy
 
+<img width="2382" height="1370" alt="genmethodsms" src="https://github.com/user-attachments/assets/e326f427-498b-41b2-9048-2d72df355ed8" />
+
+<img width="1476" height="1011" alt="image" src="https://github.com/user-attachments/assets/77eb21bb-eef5-4ac5-ae61-9367494d36e3" />
+
+
 ## Systematic Mapping Study
 
 ![mapping](https://github.com/user-attachments/assets/316aa5ae-f84e-465a-b82c-8e44710f3b30)

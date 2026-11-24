@@ -1,0 +1,171 @@
+/* Di atas croot.css dan ui.css. Hanya warna merek dan tata letak halaman ini.
+   Ungu diambil dari logo; ditulis untuk terang dan gelap karena aturan tanpa layer
+   mengalahkan nilai mode gelap bawaan croot.css. */
+:root {
+    --croot-accent: #5f4b78;
+    --croot-accent-text: #ffffff;
+    --croot-focus: #5f4b78;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        --croot-accent: #c9b6e4;
+        --croot-accent-text: #1f1729;
+        --croot-focus: #c9b6e4;
+    }
+}
+
+html {
+    scroll-padding-top: 1rem;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    html {
+        scroll-behavior: smooth;
+    }
+}
+
+.lompat {
+    position: absolute;
+    left: 1rem;
+    top: -100px;
+    z-index: 10;
+    padding: 0.75rem 1rem;
+    background-color: var(--croot-accent);
+    color: var(--croot-accent-text);
+}
+
+.lompat:focus {
+    top: 1rem;
+}
+
+.merek {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: inherit;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.merek img {
+    border-radius: 6px;
+}
+
+.pembuka {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2rem;
+    align-items: center;
+    padding-block: 3rem;
+}
+
+@media (min-width: 60rem) {
+    .pembuka {
+        grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+        padding-block: 4.5rem;
+    }
+}
+
+.pembuka h1 {
+    max-width: 20ch;
+    font-size: clamp(1.9rem, 1.4rem + 2.2vw, 2.8rem);
+    line-height: 1.15;
+}
+
+.lead {
+    max-width: 44ch;
+    font-size: 1.15rem;
+}
+
+.contoh {
+    margin: 0;
+}
+
+.contoh pre {
+    margin: 0;
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+.contoh figcaption {
+    margin-top: 0.5rem;
+    color: var(--croot-muted);
+    font-size: 0.875rem;
+}
+
+.bagian {
+    padding-block: 2.5rem;
+    border-top: 1px solid var(--croot-border);
+}
+
+#manual h3 {
+    margin-top: 2.25rem;
+}
+
+#manual p,
+.langkah p {
+    max-width: 70ch;
+}
+
+.langkah {
+    max-width: 52rem;
+    padding-left: 1.25rem;
+}
+
+.langkah > li {
+    margin-bottom: 2rem;
+    padding-left: 0.5rem;
+}
+
+.langkah h3 {
+    margin-top: 0;
+}
+
+.perintah {
+    display: flex;
+    gap: 0.5rem;
+    align-items: stretch;
+}
+
+.perintah pre {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+}
+
+.perintah .salin {
+    flex: none;
+    align-self: flex-start;
+}
+
+.perintah + p {
+    margin-top: 0.75rem;
+}
+
+@media (max-width: 30rem) {
+    .perintah {
+        flex-direction: column;
+    }
+
+    .perintah .salin {
+        align-self: flex-end;
+    }
+}
+
+/* ui.css menata isi <p> footer sebagai baris flex; kalimat ini teks biasa. */
+.site-footer p {
+    display: block;
+}
+
+#manual td:first-child {
+    min-width: 11rem;
+}
+
+.accordion {
+    max-width: 46rem;
+}
+
+.bagian-404 {
+    padding-block: 4rem;
+}

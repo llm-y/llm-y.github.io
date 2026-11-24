@@ -3,195 +3,213 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LLM Proxy - Satu Endpoint untuk Semua LLM Anda</title>
-  <meta name="description" content="Solusi premium untuk mengelola semua langganan LLM Anda dalam satu endpoint terintegrasi. Tanpa ribet, langsung pakai dari agent Anda.">
-  <link rel="icon" href="favicon.ico">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600&family=Google+Sans+Mono&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+  <title>llmy - agent AI untuk terminal dengan model lokal</title>
+  <meta name="description" content="llmy adalah CLI agent yang membaca, mengedit, dan menjalankan kode di terminal memakai model lokal lewat Ollama. Cara instalasi dan manual.">
+  <link rel="canonical" href="https://ll.my.id/">
+  <link rel="icon" href="/favicon.ico">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/crootjs/lib@0.0.41/croot.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/crootjs/lib@0.0.41/ui.min.css">
+  <link rel="stylesheet" href="style.css">
+  <link rel="modulepreload" href="https://cdn.jsdelivr.net/gh/crootjs/lib@0.0.41/api.min.js">
+  <link rel="modulepreload" href="https://cdn.jsdelivr.net/gh/crootjs/lib@0.0.41/storage.min.js">
+  <link rel="modulepreload" href="https://cdn.jsdelivr.net/gh/crootjs/lib@0.0.41/element.min.js">
+  <link rel="modulepreload" href="https://cdn.jsdelivr.net/gh/crootjs/lib@0.0.41/tabs.min.js">
+  <link rel="modulepreload" href="https://cdn.jsdelivr.net/gh/crootjs/lib@0.0.41/toast.min.js">
+  <script type="module" src="script.js"></script>
 </head>
 <body>
+  <a class="lompat" href="#isi">Langsung ke isi</a>
 
-  <!-- Navigation -->
-  <nav class="nav">
-    <div class="nav-inner">
-      <a href="/" class="nav-logo">
-        <img src="llmkotak.png" alt="LLM Proxy">
-        <span>LLM Proxy</span>
-      </a>
-      <div class="nav-links">
-        <a href="#fitur" class="nav-link">Fitur</a>
-        <a href="#cara-kerja" class="nav-link">Cara Kerja</a>
-        <a href="#mulai" class="nav-cta">Mulai Sekarang</a>
-      </div>
-      <button class="nav-menu-btn" aria-label="Menu" aria-expanded="false">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M3 12h18M3 6h18M3 18h18"/>
-        </svg>
-      </button>
-    </div>
-  </nav>
+  <header class="container nav">
+    <a class="merek" href="/"><img src="logo.png" alt="" width="32" height="32"> llmy</a>
+    <ul>
+      <li><a href="#instalasi">Instalasi</a></li>
+      <li><a href="#manual">Manual</a></li>
+      <li><a href="#tanya">Tanya jawab</a></li>
+      <li><a href="https://github.com/llm-y/agent">GitHub</a></li>
+    </ul>
+  </header>
 
-  <!-- Hero Section -->
-  <section class="hero">
-    <div class="hero-badge">Platform Enterprise</div>
-    <h1>Satu Endpoint untuk <strong>Semua LLM</strong> Anda</h1>
-    <p>Solusi premium tanpa ribet mengatur semua langganan LLM anda. Integrasikan langsung ke agent yang sudah dibuat, cukup satu konfigurasi.</p>
-    <div class="hero-actions">
-      <a href="#mulai" class="btn-primary">
-        Mulai Gratis
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </a>
-      <a href="#cara-kerja" class="btn-secondary">Lihat Cara Kerja</a>
-    </div>
+  <main id="isi">
+    <section class="container pembuka">
+      <div>
+        <h1>Agent AI di terminal, dengan model di komputer sendiri</h1>
+        <p class="lead">llmy membaca file, mengedit kode, dan menjalankan perintah di folder proyek Anda. Modelnya dijalankan Ollama, dan setiap perubahan ditanyakan dulu kecuali Anda sudah mengizinkannya.</p>
+        <p class="cluster">
+          <a class="button" href="#instalasi">Pasang</a>
+          <a class="button secondary" href="#manual">Baca manual</a>
+        </p>
+        <p class="muted">Versi <a id="versi" href="https://github.com/llm-y/agent/releases/latest">terbaru</a> untuk Linux, macOS, dan Windows. Satu file sekitar 1 MB, lisensi GPL-3.0.</p>
+      </div>
+      <figure class="contoh">
+        <pre tabindex="0"><code>› Ganti - menjadi + di @hitung.py
 
-    <!-- Code Preview -->
-    <div class="code-preview">
-      <div class="code-header">
-        <div class="code-dot"></div>
-        <div class="code-dot"></div>
-        <div class="code-dot"></div>
-        <span>request.js</span>
-      </div>
-      <div class="code-body"><span class="comment">// Satu endpoint, semua model LLM</span>
-<span class="keyword">const</span> <span class="variable">response</span> = <span class="keyword">await</span> <span class="function">fetch</span>(<span class="string">'https://ll.my.id/v1/chat'</span>, {
-  <span class="variable">method</span>: <span class="string">'POST'</span>,
-  <span class="variable">headers</span>: { <span class="string">'Authorization'</span>: <span class="string">`Bearer ${API_KEY}`</span> },
-  <span class="variable">body</span>: JSON.<span class="function">stringify</span>({
-    <span class="variable">model</span>: <span class="string">'auto'</span>,  <span class="comment">// routing otomatis</span>
-    <span class="variable">messages</span>: [{ <span class="variable">role</span>: <span class="string">'user'</span>, <span class="variable">content</span>: prompt }]
-  })
-});</div>
-    </div>
-  </section>
+● read hitung.py
+  └ 2 baris
 
-  <!-- Features Section -->
-  <section class="section section-alt" id="fitur">
-    <div class="section-header animate-in">
-      <h2>Kenapa LLM Proxy?</h2>
-      <p>Kelola semua provider LLM dari satu dashboard. Tanpa perlu konfigurasi ulang agent Anda.</p>
-    </div>
-    <div class="features-grid">
-      <div class="feature-card animate-in">
-        <div class="feature-icon blue">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a73e8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
-          </svg>
-        </div>
-        <h3>Unified API</h3>
-        <p>Satu endpoint kompatibel OpenAI untuk semua provider: GPT, Claude, Gemini, Llama, dan lainnya. Tidak perlu ubah kode.</p>
-      </div>
-      <div class="feature-card animate-in">
-        <div class="feature-icon green">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#34a853" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-          </svg>
-        </div>
-        <h3>Smart Routing</h3>
-        <p>Routing otomatis ke model terbaik berdasarkan konteks, biaya, dan latensi. Optimasi tanpa effort.</p>
-      </div>
-      <div class="feature-card animate-in">
-        <div class="feature-icon orange">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ea8600" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-          </svg>
-        </div>
-        <h3>Enterprise Security</h3>
-        <p>Enkripsi end-to-end, audit log lengkap, dan kontrol akses granular. Data Anda tetap aman.</p>
-      </div>
-      <div class="feature-card animate-in">
-        <div class="feature-icon red">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#d93025" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-          </svg>
-        </div>
-        <h3>Fallback Otomatis</h3>
-        <p>Jika satu provider down, request otomatis dialihkan ke provider lain. Zero downtime untuk agent Anda.</p>
-      </div>
-      <div class="feature-card animate-in">
-        <div class="feature-icon purple">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9334e6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
-          </svg>
-        </div>
-        <h3>Usage Analytics</h3>
-        <p>Dashboard real-time untuk monitoring penggunaan, biaya per model, dan performa setiap request.</p>
-      </div>
-      <div class="feature-card animate-in">
-        <div class="feature-icon teal">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00897b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
-          </svg>
-        </div>
-        <h3>Developer First</h3>
-        <p>SDK lengkap, dokumentasi jelas, dan contoh integrasi untuk setiap framework populer. Langsung produktif.</p>
-      </div>
-    </div>
-  </section>
+● edit hitung.py
+     1   def tambah(a, b):
+     2 -     return a - b
+     2 +     return a + b
 
-  <!-- How It Works -->
-  <section class="section" id="cara-kerja">
-    <div class="section-header animate-in">
-      <h2>Cara Kerja</h2>
-      <p>Tiga langkah sederhana untuk mengintegrasikan semua LLM Anda</p>
-    </div>
-    <div class="steps">
-      <div class="step animate-in">
-        <div class="step-number">1</div>
-        <div class="step-content">
-          <h3>Hubungkan Provider</h3>
-          <p>Masukkan API key dari setiap provider LLM yang Anda miliki. Mendukung OpenAI, Anthropic, Google, Meta, dan puluhan provider lainnya.</p>
-        </div>
-      </div>
-      <div class="step animate-in">
-        <div class="step-number">2</div>
-        <div class="step-content">
-          <h3>Konfigurasi Routing</h3>
-          <p>Atur preferensi routing: prioritas model, budget limit, fallback chain, dan load balancing sesuai kebutuhan Anda.</p>
-        </div>
-      </div>
-      <div class="step animate-in">
-        <div class="step-number">3</div>
-        <div class="step-content">
-          <h3>Integrasikan ke Agent</h3>
-          <p>Gunakan satu API key dan endpoint dari LLM Proxy. Kompatibel langsung dengan OpenAI SDK, LangChain, dan framework agent lainnya.</p>
-        </div>
-      </div>
-    </div>
-  </section>
+  Izinkan edit hitung.py?
+  › 1. Ya
+    2. Ya, selalu untuk edit di folder ini selama sesi
+    3. Tidak, beri arahan lain</code></pre>
+        <figcaption>Tampilan llmy saat meminta izin mengedit.</figcaption>
+      </figure>
+    </section>
 
-  <!-- CTA Section -->
-  <section class="cta-section" id="mulai">
-    <div class="cta-card animate-in">
-      <h2>Siap Menyederhanakan LLM Anda?</h2>
-      <p>Mulai kelola semua langganan LLM dalam satu platform terintegrasi. Setup dalam 5 menit.</p>
-      <a href="mailto:hello@ll.my.id" class="btn-primary">
-        Hubungi Kami
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </a>
-    </div>
-  </section>
+    <section class="container bagian" id="instalasi" aria-labelledby="judul-instalasi">
+      <h2 id="judul-instalasi">Instalasi</h2>
+      <ol class="langkah">
+        <li>
+          <h3>Pasang llmy</h3>
+          <div role="tablist" id="tab-sistem" aria-label="Sistem operasi">
+            <button type="button" role="tab" id="tab-unix" aria-controls="panel-unix" aria-selected="true">Linux dan macOS</button>
+            <button type="button" role="tab" id="tab-windows" aria-controls="panel-windows" aria-selected="false">Windows</button>
+            <button type="button" role="tab" id="tab-sumber" aria-controls="panel-sumber" aria-selected="false">Dari sumber</button>
+          </div>
+          <div role="tabpanel" id="panel-unix" aria-labelledby="tab-unix">
+            <div class="perintah"><pre><code>curl -fsSL https://ll.my.id/install.sh | sh</code></pre><button type="button" class="secondary salin">Salin</button></div>
+            <p class="muted">Terpasang di <code>~/.local/bin/llmy</code>. Checksum diperiksa sebelum dipasang. <a href="install.sh">Lihat skripnya</a>.</p>
+          </div>
+          <div role="tabpanel" id="panel-windows" aria-labelledby="tab-windows" hidden>
+            <div class="perintah"><pre><code>irm https://ll.my.id/install.ps1 | iex</code></pre><button type="button" class="secondary salin">Salin</button></div>
+            <p class="muted">Jalankan di PowerShell. Tool <code>bash</code> butuh <a href="https://git-scm.com/download/win">Git for Windows</a>. <a href="install.ps1">Lihat skripnya</a>.</p>
+          </div>
+          <div role="tabpanel" id="panel-sumber" aria-labelledby="tab-sumber" hidden>
+            <div class="perintah"><pre><code>cargo install --locked --git https://github.com/llm-y/agent</code></pre><button type="button" class="secondary salin">Salin</button></div>
+            <p class="muted">Butuh Rust 1.91 atau lebih baru.</p>
+          </div>
+        </li>
+        <li>
+          <h3>Siapkan model</h3>
+          <p>Pasang <a href="https://ollama.com/download">Ollama</a>, lalu unduh model yang mendukung tool. Model bawaan llmy sekitar 6,6 GB.</p>
+          <div class="perintah"><pre><code>ollama pull qwen3.5:9b</code></pre><button type="button" class="secondary salin">Salin</button></div>
+        </li>
+        <li>
+          <h3>Jalankan di folder proyek</h3>
+          <div class="perintah"><pre><code>cd proyek-saya
+llmy</code></pre><button type="button" class="secondary salin">Salin</button></div>
+        </li>
+      </ol>
+      <p>Memperbarui: jalankan lagi perintah instalasinya. Menghapus: hapus file <code>llmy</code> dan folder sesinya.</p>
+    </section>
 
-  <!-- Footer -->
-  <footer class="footer">
-    <div class="footer-inner">
-      <div class="footer-brand">
-        <img src="llmkotak.png" alt="LLM Proxy">
-        <span>&copy; 2025 LLM Proxy. All rights reserved.</span>
+    <section class="container bagian" id="manual" aria-labelledby="judul-manual">
+      <h2 id="judul-manual">Manual</h2>
+
+      <h3 id="pemakaian">Pemakaian</h3>
+      <div class="table-wrap" role="region" aria-label="Contoh pemakaian" tabindex="0">
+        <table>
+          <thead><tr><th scope="col">Perintah</th><th scope="col">Kegunaan</th></tr></thead>
+          <tbody>
+            <tr><td><code>llmy</code></td><td>Mode interaktif</td></tr>
+            <tr><td><code>llmy -p "jelaskan proyek ini"</code></td><td>Sekali jalan; jawaban ke stdout, jejak tool ke stderr</td></tr>
+            <tr><td><code>git diff | llmy -p "tinjau perubahan ini"</code></td><td>Membaca masukan dari pipa</td></tr>
+            <tr><td><code>llmy --allow edit -p "perbaiki typo di README.md"</code></td><td>Sekali jalan dengan izin edit</td></tr>
+            <tr><td><code>llmy -c</code></td><td>Melanjutkan sesi terakhir di folder ini</td></tr>
+          </tbody>
+        </table>
       </div>
-      <div class="footer-links">
-        <a href="#fitur">Fitur</a>
-        <a href="#cara-kerja">Cara Kerja</a>
-        <a href="mailto:hello@ll.my.id">Kontak</a>
+
+      <h3 id="opsi">Opsi</h3>
+      <div class="table-wrap" role="region" aria-label="Opsi" tabindex="0">
+        <table>
+          <thead><tr><th scope="col">Opsi</th><th scope="col">Arti</th></tr></thead>
+          <tbody>
+            <tr><td><code>-m</code>, <code>--model &lt;nama&gt;</code></td><td>Model Ollama, bawaan <code>qwen3.5:9b</code> (variabel <code>LLMY_MODEL</code>)</td></tr>
+            <tr><td><code>--url &lt;url&gt;</code></td><td>Alamat Ollama, bawaan <code>http://localhost:11434</code> (<code>LLMY_URL</code>). Hanya http.</td></tr>
+            <tr><td><code>--ctx &lt;n&gt;</code></td><td>Ukuran context, bawaan 32768, minimal 4096 (<code>LLMY_CTX</code>)</td></tr>
+            <tr><td><code>--think</code></td><td>Aktifkan thinking bila model mendukung</td></tr>
+            <tr><td><code>-c</code>, <code>--continue</code></td><td>Lanjutkan sesi terakhir di folder ini</td></tr>
+            <tr><td><code>-r</code>, <code>--resume &lt;id&gt;</code></td><td>Lanjutkan sesi tertentu</td></tr>
+            <tr><td><code>--sessions</code></td><td>Daftar sesi di folder ini</td></tr>
+            <tr><td><code>--no-session</code></td><td>Jangan simpan sesi</td></tr>
+            <tr><td><code>--allow edit,bash</code></td><td>Tidak bertanya untuk edit, bash, atau keduanya</td></tr>
+            <tr><td><code>-p</code>, <code>--print &lt;prompt&gt;</code></td><td>Sekali jalan</td></tr>
+            <tr><td><code>-h</code>, <code>-V</code></td><td>Bantuan dan versi</td></tr>
+          </tbody>
+        </table>
       </div>
-    </div>
+
+      <h3 id="perintah">Perintah dan tombol</h3>
+      <div class="table-wrap" role="region" aria-label="Perintah dan tombol" tabindex="0">
+        <table>
+          <thead><tr><th scope="col">Ketik</th><th scope="col">Arti</th></tr></thead>
+          <tbody>
+            <tr><td><code>/help</code></td><td>Bantuan</td></tr>
+            <tr><td><code>/model [nama]</code></td><td>Lihat atau ganti model</td></tr>
+            <tr><td><code>/think</code></td><td>Aktifkan atau matikan thinking</td></tr>
+            <tr><td><code>/compact</code></td><td>Ringkas percakapan untuk menghemat context</td></tr>
+            <tr><td><code>/clear</code></td><td>Mulai percakapan baru</td></tr>
+            <tr><td><code>/copy</code></td><td>Salin jawaban terakhir (terminal yang mendukung OSC 52)</td></tr>
+            <tr><td><code>/exit</code></td><td>Keluar</td></tr>
+            <tr><td><code>@nama-file</code></td><td>Sebut file; daftar file muncul saat mengetik</td></tr>
+            <tr><td><kbd>Enter</kbd></td><td>Kirim. Saat llmy bekerja, pesan diantrekan</td></tr>
+            <tr><td><kbd>Alt</kbd>+<kbd>Enter</kbd> atau <kbd>Ctrl</kbd>+<kbd>J</kbd></td><td>Baris baru</td></tr>
+            <tr><td><kbd>Esc</kbd></td><td>Hentikan; pesan antre kembali ke kotak input</td></tr>
+            <tr><td><kbd>Ctrl</kbd>+<kbd>C</kbd></td><td>Hentikan; dua kali untuk keluar</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 id="izin">Izin</h3>
+      <div class="table-wrap" role="region" aria-label="Aturan izin" tabindex="0">
+        <table>
+          <thead><tr><th scope="col">Tool</th><th scope="col">Di folder kerja</th><th scope="col">Di luar folder kerja atau di <code>.git</code></th></tr></thead>
+          <tbody>
+            <tr><td><code>read</code></td><td>Langsung</td><td>Di luar folder kerja: selalu ditanya</td></tr>
+            <tr><td><code>edit</code>, <code>write</code></td><td>Ditanya, dengan diff</td><td>Selalu ditanya</td></tr>
+            <tr><td><code>bash</code></td><td>Ditanya, perintah tampil utuh</td><td>Tidak dibatasi folder</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="alert warning">Izin ini bukan sandbox. Perintah <code>bash</code> yang Anda setujui berjalan dengan hak akses Anda dan bisa menjangkau seluruh komputer.</p>
+      <p>Pilihan "selalu" untuk <code>bash</code> hanya berlaku untuk perintah yang persis sama, dan semua pilihan "selalu" hilang saat llmy ditutup. Pada mode <code>-p</code>, tindakan tanpa izin menghentikan pekerjaan dengan kode keluar 1.</p>
+
+      <h3 id="agents">Instruksi proyek</h3>
+      <p>Tulis aturan proyek di <code>AGENTS.md</code> (atau <code>CLAUDE.md</code> bila tidak ada). llmy membaca file itu dari akar git sampai folder kerja, ditambah instruksi pribadi di <code>~/.config/llmy/AGENTS.md</code>. Totalnya dibatasi sekitar 8.000 byte; yang terdekat dengan folder kerja didahulukan.</p>
+
+      <h3 id="sesi">Sesi dan context</h3>
+      <p>Percakapan, termasuk isi file yang dibaca, disimpan di <code>~/.local/state/llmy/sessions</code> (Windows: <code>%LOCALAPPDATA%\llmy</code>) dan tidak dihapus otomatis. Pada 80% context, percakapan diringkas otomatis. Pesan Anda disalin apa adanya ke ringkasan, dipotong bila panjang.</p>
+    </section>
+
+    <section class="container bagian" id="tanya" aria-labelledby="judul-tanya">
+      <h2 id="judul-tanya">Tanya jawab</h2>
+      <div class="accordion">
+        <details name="tanya">
+          <summary>Apakah kode saya dikirim ke internet?</summary>
+          <p>llmy hanya menghubungi alamat Ollama yang Anda atur, bawaannya komputer sendiri. Pengecualiannya perintah <code>bash</code> yang Anda setujui, yang bisa mengakses jaringan.</p>
+        </details>
+        <details name="tanya">
+          <summary>Seberapa andal hasilnya?</summary>
+          <p>Cocok untuk perubahan kecil dan terarah. Model lokal 9B bisa salah atau mengarang, jadi baca diff dan jalankan uji sebelum memakai hasilnya.</p>
+        </details>
+        <details name="tanya">
+          <summary>Model apa yang bisa dipakai?</summary>
+          <p>Model Ollama apa pun yang mendukung tool. Cek dengan <code>ollama show nama-model</code>: pada bagian Capabilities harus ada <code>tools</code>.</p>
+        </details>
+        <details name="tanya">
+          <summary>Muncul "tidak bisa terhubung"</summary>
+          <p>Pastikan Ollama berjalan (<code>ollama serve</code>) dan alamatnya benar. Untuk Ollama di komputer lain pakai <code>--url http://alamat:11434</code>; sambungannya tidak terenkripsi, jadi lewatkan jaringan tepercaya atau terowongan SSH.</p>
+        </details>
+        <details name="tanya">
+          <summary>Perintah llmy tidak ditemukan</summary>
+          <p>Di Linux dan macOS tambahkan <code>export PATH="$HOME/.local/bin:$PATH"</code> ke berkas profil shell. Di Windows buka terminal baru.</p>
+        </details>
+      </div>
+    </section>
+  </main>
+
+  <footer class="container site-footer">
+    <p>llmy, GPL-3.0. Halaman ini memakai <a href="https://croot.js.org/">CrootJS</a>.</p>
+    <ul>
+      <li><a href="https://github.com/llm-y/agent">Kode sumber</a></li>
+      <li><a href="https://github.com/llm-y/agent/issues">Lapor masalah</a></li>
+      <li><a href="https://github.com/llm-y/agent/releases">Rilis</a></li>
+    </ul>
   </footer>
-
-  <script type="module" src="main.js"></script>
 </body>
 </html>

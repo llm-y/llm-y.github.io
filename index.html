@@ -129,7 +129,7 @@ llmy</code></pre><button type="button" class="secondary salin">Salin</button></d
             <tr><td><code>-r</code>, <code>--resume &lt;id&gt;</code></td><td>Lanjutkan sesi tertentu</td></tr>
             <tr><td><code>--sessions</code></td><td>Daftar sesi di folder ini</td></tr>
             <tr><td><code>--no-session</code></td><td>Jangan simpan sesi</td></tr>
-            <tr><td><code>--tools text</code></td><td>Tool lewat teks, untuk server yang tidak meneruskan tool calling (<code>LLMY_TOOLS</code>). Bawaan <code>native</code></td></tr>
+            <tr><td><code>--tools &lt;cara&gt;</code></td><td><code>auto</code> (bawaan), <code>native</code>, atau <code>text</code> (<code>LLMY_TOOLS</code>); lihat <a href="#model">Model</a></td></tr>
             <tr><td><code>--allow edit,bash,memory</code></td><td>Tidak bertanya untuk yang disebut: edit, bash, menyimpan memori</td></tr>
             <tr><td><code>-p</code>, <code>--print &lt;prompt&gt;</code></td><td>Sekali jalan</td></tr>
             <tr><td><code>-h</code>, <code>-V</code></td><td>Bantuan dan versi</td></tr>
@@ -153,7 +153,9 @@ llmy -m anthropic/claude-opus-5-5</code></pre><button type="button" class="secon
       <p>Di dalam sesi, ganti dengan <code>/model anthropic/nama</code>; percakapannya tetap berlanjut. Kunci hanya dibaca dari variabel lingkungan, tidak disimpan, tidak diteruskan ke perintah <code>bash</code>, dan hanya dikirim lewat https (atau ke komputer sendiri).</p>
       <p>Server di jaringan lokal seperti vLLM atau LM Studio bisa dipakai lewat <code>http://</code> tanpa kunci. Bila kunci terpasang, kunci itu tidak dikirim ke sana, dan isi percakapan tidak terenkripsi di jalan.</p>
       <div class="perintah"><pre><code>llmy -m openai/nama-model --url http://192.168.1.5:8000/v1</code></pre><button type="button" class="secondary salin">Salin</button></div>
-      <p>Bila server tidak meneruskan tool calling, tambahkan <code>--tools text</code>. Cara ini bergantung pada kepatuhan model menulis format tertentu: hasil model kecil bercampur, jadi pakai <code>native</code> bila tersedia.</p>
+      <p>API yang hanya bisa teks pun jalan. Pada server selain Ollama dan API resmi, llmy memeriksa sekali dengan satu permintaan kecil (paling banyak empat), tanpa isi percakapan Anda. Bila tool calling native tidak jalan, llmy pindah ke tool lewat teks dan memberi tahu. Hasilnya diingat 30 hari per server dan model. Mode teks bergantung pada kepatuhan model, jadi hasil model kecil bercampur; <code>--tools native</code> atau <code>--tools text</code> memaksa salah satunya.</p>
+      <p>DeepSeek, dengan kunci di <code>OPENAI_API_KEY</code>:</p>
+      <div class="perintah"><pre><code>llmy -m openai/deepseek-flash --url https://api.deepseek.com</code></pre><button type="button" class="secondary salin">Salin</button></div>
       <p class="alert warning">Dengan model cloud, pesan Anda dan isi file yang dibaca dikirim ke penyedianya dan dikenai biaya. llmy menampilkan alamat tujuannya saat mulai.</p>
       <p>Pada Claude Opus 5 dan 5.5, Sonnet 5.5, dan Fable 5, llmy mengaktifkan model cadangan: permintaan yang ditolak pengklasifikasi keamanan dicoba lagi oleh model lain yang dipilih Anthropic, dan hal itu diberitahukan bila terjadi di jawaban tersebut.</p>
 

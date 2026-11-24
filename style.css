@@ -169,3 +169,12 @@ html {
 .bagian-404 {
     padding-block: 4rem;
 }
+
+.bagian > ul {
+    max-width: 65ch;
+    margin-block: 1rem;
+}
+
+.bagian > ul > li + li {
+    margin-top: 0.4rem;
+}

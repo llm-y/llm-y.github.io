@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>llmy - agent AI untuk terminal, model lokal atau cloud</title>
-  <meta name="description" content="llmy adalah CLI agent yang membaca, mengedit, dan menjalankan kode di terminal memakai model lokal lewat Ollama, atau Claude dan API kompatibel OpenAI. Cara instalasi dan manual.">
+  <meta name="description" content="llmy adalah CLI agent yang membaca, mengedit, dan menjalankan kode di terminal memakai model lokal lewat Ollama, atau Claude dan API kompatibel OpenAI. Memori sederhana di AGENTS.md. Cara instalasi dan manual.">
   <link rel="canonical" href="https://ll.my.id/">
   <link rel="icon" href="/favicon.ico">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/crootjs/lib@0.0.41/croot.min.css">
@@ -25,6 +25,7 @@
     <ul>
       <li><a href="#instalasi">Instalasi</a></li>
       <li><a href="#manual">Manual</a></li>
+      <li><a href="#memori">Memori</a></li>
       <li><a href="#tanya">Tanya jawab</a></li>
       <li><a href="https://github.com/llm-y/agent">GitHub</a></li>
     </ul>
@@ -34,7 +35,7 @@
     <section class="container pembuka">
       <div>
         <h1>Agent AI di terminal, dengan model pilihan Anda</h1>
-        <p class="lead">llmy membaca dan mencari file, mengedit kode, dan menjalankan perintah di folder proyek Anda. Bawaannya model lokal lewat Ollama; Claude dan API kompatibel OpenAI juga bisa dipakai. Setiap perubahan ditanyakan dulu kecuali Anda sudah mengizinkannya.</p>
+        <p class="lead">llmy membaca dan mencari file, mengedit kode, dan menjalankan perintah di folder proyek Anda. Bawaannya model lokal lewat Ollama; Claude dan API kompatibel OpenAI juga bisa dipakai. Memorinya cukup satu file <code>AGENTS.md</code>, tanpa database. Setiap perubahan ditanyakan dulu kecuali Anda sudah mengizinkannya.</p>
         <p class="cluster">
           <a class="button" href="#instalasi">Pasang</a>
           <a class="button secondary" href="#manual">Baca manual</a>
@@ -128,7 +129,8 @@ llmy</code></pre><button type="button" class="secondary salin">Salin</button></d
             <tr><td><code>-r</code>, <code>--resume &lt;id&gt;</code></td><td>Lanjutkan sesi tertentu</td></tr>
             <tr><td><code>--sessions</code></td><td>Daftar sesi di folder ini</td></tr>
             <tr><td><code>--no-session</code></td><td>Jangan simpan sesi</td></tr>
-            <tr><td><code>--allow edit,bash</code></td><td>Tidak bertanya untuk edit, bash, atau keduanya</td></tr>
+            <tr><td><code>--tools text</code></td><td>Tool lewat teks, untuk server yang tidak meneruskan tool calling (<code>LLMY_TOOLS</code>). Bawaan <code>native</code></td></tr>
+            <tr><td><code>--allow edit,bash,memory</code></td><td>Tidak bertanya untuk yang disebut: edit, bash, menyimpan memori</td></tr>
             <tr><td><code>-p</code>, <code>--print &lt;prompt&gt;</code></td><td>Sekali jalan</td></tr>
             <tr><td><code>-h</code>, <code>-V</code></td><td>Bantuan dan versi</td></tr>
           </tbody>
@@ -149,6 +151,9 @@ llmy</code></pre><button type="button" class="secondary salin">Salin</button></d
       <div class="perintah"><pre><code>export ANTHROPIC_API_KEY=kunci-anda
 llmy -m anthropic/claude-opus-5-5</code></pre><button type="button" class="secondary salin">Salin</button></div>
       <p>Di dalam sesi, ganti dengan <code>/model anthropic/nama</code>; percakapannya tetap berlanjut. Kunci hanya dibaca dari variabel lingkungan, tidak disimpan, tidak diteruskan ke perintah <code>bash</code>, dan hanya dikirim lewat https (atau ke komputer sendiri).</p>
+      <p>Server di jaringan lokal seperti vLLM atau LM Studio bisa dipakai lewat <code>http://</code> tanpa kunci. Bila kunci terpasang, kunci itu tidak dikirim ke sana, dan isi percakapan tidak terenkripsi di jalan.</p>
+      <div class="perintah"><pre><code>llmy -m openai/nama-model --url http://192.168.1.5:8000/v1</code></pre><button type="button" class="secondary salin">Salin</button></div>
+      <p>Bila server tidak meneruskan tool calling, tambahkan <code>--tools text</code>. Cara ini bergantung pada kepatuhan model menulis format tertentu: hasil model kecil bercampur, jadi pakai <code>native</code> bila tersedia.</p>
       <p class="alert warning">Dengan model cloud, pesan Anda dan isi file yang dibaca dikirim ke penyedianya dan dikenai biaya. llmy menampilkan alamat tujuannya saat mulai.</p>
       <p>Pada Claude Opus 5 dan 5.5, Sonnet 5.5, dan Fable 5, llmy mengaktifkan model cadangan: permintaan yang ditolak pengklasifikasi keamanan dicoba lagi oleh model lain yang dipilih Anthropic, dan hal itu diberitahukan bila terjadi di jawaban tersebut.</p>
 
@@ -161,6 +166,8 @@ llmy -m anthropic/claude-opus-5-5</code></pre><button type="button" class="secon
             <tr><td><code>/model [nama]</code></td><td>Lihat atau ganti model</td></tr>
             <tr><td><code>/think</code></td><td>Aktifkan atau matikan thinking</td></tr>
             <tr><td><code>/compact</code></td><td>Ringkas percakapan untuk menghemat context</td></tr>
+            <tr><td><code>/remember [all] fakta</code></td><td>Simpan ke memori proyek, atau semua proyek dengan <code>all</code></td></tr>
+            <tr><td><code>/memory</code></td><td>Lihat memori</td></tr>
             <tr><td><code>/clear</code></td><td>Mulai percakapan baru</td></tr>
             <tr><td><code>/copy</code></td><td>Salin jawaban terakhir (terminal yang mendukung OSC 52)</td></tr>
             <tr><td><code>/exit</code></td><td>Keluar</td></tr>
@@ -180,6 +187,7 @@ llmy -m anthropic/claude-opus-5-5</code></pre><button type="button" class="secon
           <tbody>
             <tr><td><code>read</code>, <code>grep</code></td><td>Langsung</td><td>Selalu ditanya, kecuali membaca <code>.git</code></td></tr>
             <tr><td><code>edit</code>, <code>write</code></td><td>Ditanya, dengan diff</td><td>Selalu ditanya</td></tr>
+            <tr><td><code>remember</code></td><td>Ditanya, dengan diff</td><td>Memori semua proyek: ditanya</td></tr>
             <tr><td><code>bash</code></td><td>Ditanya, perintah tampil utuh</td><td>Tidak dibatasi folder</td></tr>
           </tbody>
         </table>
@@ -187,10 +195,32 @@ llmy -m anthropic/claude-opus-5-5</code></pre><button type="button" class="secon
       <p class="alert warning">Izin ini bukan sandbox. Perintah <code>bash</code> yang Anda setujui berjalan dengan hak akses Anda dan bisa menjangkau seluruh komputer.</p>
       <p><code>grep</code> mencari isi file atau nama file. File tersembunyi, symlink, dan folder hasil build seperti <code>target</code> dan <code>node_modules</code> dilewati. Bila model memakai <code>bash</code> hanya untuk melihat atau mencari file, llmy mengarahkannya ke <code>read</code> atau <code>grep</code> sebelum bertanya kepada Anda, paling banyak tiga kali per giliran.</p>
       <p>File rahasia dikenali dari namanya, misalnya <code>.env</code>, <code>id_rsa</code>, <code>*.pem</code>, dan <code>credentials.json</code>. Pengenalan ini tidak lengkap; jangan mengandalkannya sebagai satu-satunya pelindung.</p>
-      <p>Pilihan "selalu" untuk <code>bash</code> hanya berlaku untuk perintah yang persis sama, dan semua pilihan "selalu" hilang saat llmy ditutup. Pada mode <code>-p</code>, tindakan tanpa izin menghentikan pekerjaan dengan kode keluar 1.</p>
+      <p>Pilihan "selalu" untuk <code>bash</code> hanya berlaku untuk perintah yang persis sama, dan semua pilihan "selalu" hilang saat llmy ditutup. Pada mode <code>-p</code>, tindakan tanpa izin menghentikan pekerjaan dengan kode keluar 1, kecuali menyimpan memori: itu hanya dilewati.</p>
 
       <h3 id="agents">Instruksi proyek</h3>
       <p>Tulis aturan proyek di <code>AGENTS.md</code> (atau <code>CLAUDE.md</code> bila tidak ada). llmy membaca file itu dari akar git sampai folder kerja, ditambah instruksi pribadi di <code>~/.config/llmy/AGENTS.md</code>. Totalnya dibatasi sekitar 8.000 byte; yang terdekat dengan folder kerja didahulukan.</p>
+
+      <h3 id="memori">Memori</h3>
+      <p>Memori llmy adalah daftar fakta di bagian <code>## Memory</code> pada <code>AGENTS.md</code>. Tidak ada database, embedding, atau proses latar, dan model tidak dipanggil khusus untuk mengurusnya. Anda bisa membaca, mengedit, atau menghapusnya seperti file biasa.</p>
+      <div class="table-wrap" role="region" aria-label="Jenis memori" tabindex="0">
+        <table>
+          <thead><tr><th scope="col">Cakupan</th><th scope="col">File</th><th scope="col">Dibaca</th></tr></thead>
+          <tbody>
+            <tr><td>Proyek</td><td><code>AGENTS.md</code> di akar proyek (atau <code>CLAUDE.md</code> bila hanya itu yang ada)</td><td>Di proyek itu</td></tr>
+            <tr><td>Semua proyek</td><td><code>~/.config/llmy/AGENTS.md</code> (Windows: <code>%APPDATA%\llmy</code>)</td><td>Di setiap proyek</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Memori semua proyek otomatis terbawa saat Anda pindah proyek. Memori proyek bisa ikut masuk git. Cukup katakan, misalnya:</p>
+      <div class="perintah"><pre><code>Ingat: proyek ini pakai pnpm
+Ingat untuk semua proyek: jawab singkat dalam bahasa Indonesia</code></pre><button type="button" class="secondary salin">Salin</button></div>
+      <ul>
+        <li>Model menyimpan dan mengganti fakta yang usang. Bila pesan Anda diawali "ingat" tetapi model lupa menyimpannya, llmy menyimpan kalimat Anda sendiri.</li>
+        <li>Duplikat ditolak, fakta yang mirip harus diganti atau dipertahankan secara tegas, dan isinya dibatasi 40 fakta per file.</li>
+        <li>Setiap penyimpanan menampilkan diff dan meminta izin. Pilih "selalu", atau pakai <code>--allow memory</code>, agar sepenuhnya otomatis.</li>
+        <li>Yang tampak seperti kunci atau sandi ditolak. Pengenalan ini tidak lengkap, jadi jangan menyuruh llmy mengingat rahasia.</li>
+        <li>Memori baru dibaca di sesi berikutnya atau sesudah <code>/clear</code>.</li>
+      </ul>
 
       <h3 id="sesi">Sesi dan context</h3>
       <p>Percakapan, termasuk isi file yang dibaca, disimpan di <code>~/.local/state/llmy/sessions</code> (Windows: <code>%LOCALAPPDATA%\llmy</code>) dan tidak dihapus otomatis. Pada 80% context, percakapan diringkas otomatis. Pesan Anda disalin apa adanya ke ringkasan, dipotong bila panjang.</p>

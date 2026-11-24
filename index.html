@@ -34,7 +34,7 @@
     <section class="container pembuka">
       <div>
         <h1>Agent AI di terminal, dengan model di komputer sendiri</h1>
-        <p class="lead">llmy membaca file, mengedit kode, dan menjalankan perintah di folder proyek Anda. Modelnya dijalankan Ollama, dan setiap perubahan ditanyakan dulu kecuali Anda sudah mengizinkannya.</p>
+        <p class="lead">llmy membaca dan mencari file, mengedit kode, dan menjalankan perintah di folder proyek Anda. Modelnya dijalankan Ollama, dan setiap perubahan ditanyakan dulu kecuali Anda sudah mengizinkannya.</p>
         <p class="cluster">
           <a class="button" href="#instalasi">Pasang</a>
           <a class="button secondary" href="#manual">Baca manual</a>
@@ -160,13 +160,14 @@ llmy</code></pre><button type="button" class="secondary salin">Salin</button></d
         <table>
           <thead><tr><th scope="col">Tool</th><th scope="col">Di folder kerja</th><th scope="col">Di luar folder kerja atau di <code>.git</code></th></tr></thead>
           <tbody>
-            <tr><td><code>read</code></td><td>Langsung</td><td>Di luar folder kerja: selalu ditanya</td></tr>
+            <tr><td><code>read</code>, <code>grep</code></td><td>Langsung</td><td>Di luar folder kerja: selalu ditanya</td></tr>
             <tr><td><code>edit</code>, <code>write</code></td><td>Ditanya, dengan diff</td><td>Selalu ditanya</td></tr>
             <tr><td><code>bash</code></td><td>Ditanya, perintah tampil utuh</td><td>Tidak dibatasi folder</td></tr>
           </tbody>
         </table>
       </div>
       <p class="alert warning">Izin ini bukan sandbox. Perintah <code>bash</code> yang Anda setujui berjalan dengan hak akses Anda dan bisa menjangkau seluruh komputer.</p>
+      <p><code>grep</code> mencari isi file atau nama file. File tersembunyi, symlink, dan folder hasil build seperti <code>target</code> dan <code>node_modules</code> dilewati. Bila model memakai <code>bash</code> hanya untuk melihat atau mencari file, llmy mengarahkannya ke <code>read</code> atau <code>grep</code> sebelum bertanya kepada Anda, paling banyak tiga kali per giliran.</p>
       <p>Pilihan "selalu" untuk <code>bash</code> hanya berlaku untuk perintah yang persis sama, dan semua pilihan "selalu" hilang saat llmy ditutup. Pada mode <code>-p</code>, tindakan tanpa izin menghentikan pekerjaan dengan kode keluar 1.</p>
 
       <h3 id="agents">Instruksi proyek</h3>

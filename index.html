@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>llmy - agent AI untuk terminal, model lokal atau cloud</title>
-  <meta name="description" content="llmy adalah CLI agent yang membaca, mengedit, dan menjalankan kode di terminal memakai model lokal lewat Ollama, atau Claude dan API kompatibel OpenAI. Memori sederhana di AGENTS.md. Cara instalasi dan manual.">
+  <meta name="description" content="llmy adalah CLI agent yang membaca, mengedit, dan menjalankan kode di terminal memakai model lokal lewat Ollama, Claude, atau API kompatibel OpenAI, termasuk yang hanya bisa teks. Memori sederhana di AGENTS.md. Cara instalasi dan manual.">
   <link rel="canonical" href="https://ll.my.id/">
   <link rel="icon" href="/favicon.ico">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/crootjs/lib@0.0.41/croot.min.css">
@@ -25,6 +25,7 @@
     <ul>
       <li><a href="#instalasi">Instalasi</a></li>
       <li><a href="#manual">Manual</a></li>
+      <li><a href="#api-teks">API teks</a></li>
       <li><a href="#memori">Memori</a></li>
       <li><a href="#tanya">Tanya jawab</a></li>
       <li><a href="https://github.com/llm-y/agent">GitHub</a></li>
@@ -35,7 +36,7 @@
     <section class="container pembuka">
       <div>
         <h1>Agent AI di terminal, dengan model pilihan Anda</h1>
-        <p class="lead">llmy membaca dan mencari file, mengedit kode, dan menjalankan perintah di folder proyek Anda. Bawaannya model lokal lewat Ollama; Claude dan API kompatibel OpenAI juga bisa dipakai. Memorinya cukup satu file <code>AGENTS.md</code>, tanpa database. Setiap perubahan ditanyakan dulu kecuali Anda sudah mengizinkannya.</p>
+        <p class="lead">llmy membaca dan mencari file, mengedit kode, dan menjalankan perintah di folder proyek Anda. Bawaannya model lokal lewat Ollama; Claude dan API kompatibel OpenAI juga bisa dipakai, termasuk <a href="#api-teks">API yang hanya bisa teks</a>. Memorinya cukup satu file <code>AGENTS.md</code>, tanpa database. Setiap perubahan ditanyakan dulu kecuali Anda sudah mengizinkannya.</p>
         <p class="cluster">
           <a class="button" href="#instalasi">Pasang</a>
           <a class="button secondary" href="#manual">Baca manual</a>
@@ -129,7 +130,7 @@ llmy</code></pre><button type="button" class="secondary salin">Salin</button></d
             <tr><td><code>-r</code>, <code>--resume &lt;id&gt;</code></td><td>Lanjutkan sesi tertentu</td></tr>
             <tr><td><code>--sessions</code></td><td>Daftar sesi di folder ini</td></tr>
             <tr><td><code>--no-session</code></td><td>Jangan simpan sesi</td></tr>
-            <tr><td><code>--tools &lt;cara&gt;</code></td><td><code>auto</code> (bawaan), <code>native</code>, atau <code>text</code> (<code>LLMY_TOOLS</code>); lihat <a href="#model">Model</a></td></tr>
+            <tr><td><code>--tools &lt;cara&gt;</code></td><td><code>auto</code> (bawaan), <code>native</code>, atau <code>text</code> (<code>LLMY_TOOLS</code>); lihat <a href="#api-teks">API yang hanya bisa teks</a></td></tr>
             <tr><td><code>--allow edit,bash,memory</code></td><td>Tidak bertanya untuk yang disebut: edit, bash, menyimpan memori</td></tr>
             <tr><td><code>-p</code>, <code>--print &lt;prompt&gt;</code></td><td>Sekali jalan</td></tr>
             <tr><td><code>-h</code>, <code>-V</code></td><td>Bantuan dan versi</td></tr>
@@ -153,11 +154,34 @@ llmy -m anthropic/claude-opus-5-5</code></pre><button type="button" class="secon
       <p>Di dalam sesi, ganti dengan <code>/model anthropic/nama</code>; percakapannya tetap berlanjut. Kunci hanya dibaca dari variabel lingkungan, tidak disimpan, tidak diteruskan ke perintah <code>bash</code>, dan hanya dikirim lewat https (atau ke komputer sendiri).</p>
       <p>Server di jaringan lokal seperti vLLM atau LM Studio bisa dipakai lewat <code>http://</code> tanpa kunci. Bila kunci terpasang, kunci itu tidak dikirim ke sana, dan isi percakapan tidak terenkripsi di jalan.</p>
       <div class="perintah"><pre><code>llmy -m openai/nama-model --url http://192.168.1.5:8000/v1</code></pre><button type="button" class="secondary salin">Salin</button></div>
-      <p>API yang hanya bisa teks pun jalan. Pada server selain Ollama dan API resmi, llmy memeriksa sekali dengan satu permintaan kecil (paling banyak empat), tanpa isi percakapan Anda. Bila tool calling native tidak jalan, llmy pindah ke tool lewat teks dan memberi tahu. Hasilnya diingat 30 hari per server dan model. Mode teks bergantung pada kepatuhan model, jadi hasil model kecil bercampur; <code>--tools native</code> atau <code>--tools text</code> memaksa salah satunya.</p>
       <p>DeepSeek, dengan kunci di <code>OPENAI_API_KEY</code>:</p>
       <div class="perintah"><pre><code>llmy -m openai/deepseek-flash --url https://api.deepseek.com</code></pre><button type="button" class="secondary salin">Salin</button></div>
       <p class="alert warning">Dengan model cloud, pesan Anda dan isi file yang dibaca dikirim ke penyedianya dan dikenai biaya. llmy menampilkan alamat tujuannya saat mulai.</p>
       <p>Pada Claude Opus 5 dan 5.5, Sonnet 5.5, dan Fable 5, llmy mengaktifkan model cadangan: permintaan yang ditolak pengklasifikasi keamanan dicoba lagi oleh model lain yang dipilih Anthropic, dan hal itu diberitahukan bila terjadi di jawaban tersebut.</p>
+
+      <h3 id="api-teks">API yang hanya bisa teks</h3>
+      <p>Agent biasanya butuh API dengan <em>tool calling</em> native, yaitu model mengirim panggilan tool sebagai data terstruktur. llmy tidak mewajibkannya. Bila server hanya menerima dan membalas teks, model menulis panggilannya di dalam jawaban:</p>
+      <pre tabindex="0"><code>&lt;use_tool name="read"&gt;
+{"path": "hitung.py"}
+&lt;/use_tool&gt;</code></pre>
+      <p>llmy membaca blok itu, memeriksa izinnya, menjalankan tool-nya, lalu mengirim hasilnya sebagai pesan teks. Tool, izin, dan sesinya sama dengan mode native. Tidak perlu mengatur apa pun:</p>
+      <div class="perintah"><pre><code>llmy -m openai/nama-model --url https://alamat-server/v1</code></pre><button type="button" class="secondary salin">Salin</button></div>
+      <div class="table-wrap" role="region" aria-label="Pilihan cara memanggil tool" tabindex="0">
+        <table>
+          <thead><tr><th scope="col"><code>--tools</code></th><th scope="col">Yang terjadi</th></tr></thead>
+          <tbody>
+            <tr><td><code>auto</code> (bawaan)</td><td>Native didahulukan. Pindah ke teks bila native terbukti gagal dan teks terbukti jalan; llmy memberi tahu saat itu</td></tr>
+            <tr><td><code>native</code></td><td>Selalu native, tanpa pemeriksaan</td></tr>
+            <tr><td><code>text</code></td><td>Selalu lewat teks, tanpa pemeriksaan</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul>
+        <li>Pada server selain Ollama dan API resmi, <code>auto</code> memeriksa sekali dengan satu sampai empat permintaan kecil tanpa isi percakapan Anda. Hasilnya diingat 30 hari per server dan model, atau satu hari bila tidak jelas.</li>
+        <li>Ollama tidak diperiksa: llmy pindah ke teks bila Ollama menolak tool untuk model itu.</li>
+        <li>Protokolnya tetap harus Ollama, OpenAI (<code>/v1/chat/completions</code>), atau Anthropic (<code>/v1/messages</code>). API dengan format sendiri belum bisa dipakai langsung.</li>
+        <li>Mode teks bergantung pada kepatuhan model. Dalam uji kecil di server yang membuang tool, qwen3.5 9b berhasil 3 dari 3, gemma4 12b 1 dari 1, nemotron 4b 1 dari 2, dan qwen2.5 3b 0 dari 2.</li>
+      </ul>
 
       <h3 id="perintah">Perintah dan tombol</h3>
       <div class="table-wrap" role="region" aria-label="Perintah dan tombol" tabindex="0">
@@ -241,7 +265,11 @@ Ingat untuk semua proyek: jawab singkat dalam bahasa Indonesia</code></pre><butt
         </details>
         <details name="tanya">
           <summary>Model apa yang bisa dipakai?</summary>
-          <p>Model apa pun yang mendukung tool. Untuk Ollama, cek dengan <code>ollama show nama-model</code>: pada bagian Capabilities harus ada <code>tools</code>.</p>
+          <p>Paling baik model yang mendukung tool. Untuk Ollama, cek dengan <code>ollama show nama-model</code>: pada bagian Capabilities ada <code>tools</code>. Model atau server tanpa dukungan itu dipakai lewat <a href="#api-teks">mode teks</a>.</p>
+        </details>
+        <details name="tanya">
+          <summary>API saya hanya chat biasa tanpa tool calling. Bisa?</summary>
+          <p>Bisa, asalkan formatnya Ollama, OpenAI, atau Anthropic dan modelnya cukup patuh mengikuti format. Lihat <a href="#api-teks">API yang hanya bisa teks</a>. Bila muncul pesan bahwa model tidak memakai tool, coba model yang lebih kuat atau paksa dengan <code>--tools text</code>.</p>
         </details>
         <details name="tanya">
           <summary>Muncul "tidak bisa terhubung"</summary>

@@ -36,7 +36,7 @@
     <section class="container pembuka">
       <div>
         <h1>Agent AI di terminal, dengan model pilihan Anda</h1>
-        <p class="lead">llmy membaca dan mencari file, mengedit kode, dan menjalankan perintah di folder proyek Anda. Bawaannya model lokal lewat Ollama; Claude dan API kompatibel OpenAI juga bisa dipakai, termasuk <a href="#api-teks">API yang hanya bisa teks</a>. Memorinya cukup satu file <code>AGENTS.md</code>, tanpa database. Setiap perubahan ditanyakan dulu kecuali Anda sudah mengizinkannya.</p>
+        <p class="lead">llmy membaca dan mencari file, mengedit kode, dan menjalankan perintah di folder proyek Anda. Bawaannya model lokal lewat Ollama; Claude, Google Gemini, dan API kompatibel OpenAI juga bisa dipakai, termasuk <a href="#api-teks">API yang hanya bisa teks</a>. Memorinya cukup satu file <code>AGENTS.md</code>, tanpa database. Setiap perubahan ditanyakan dulu kecuali Anda sudah mengizinkannya.</p>
         <p class="cluster">
           <a class="button" href="#instalasi">Pasang</a>
           <a class="button secondary" href="#manual">Baca manual</a>
@@ -121,9 +121,10 @@ llmy</code></pre><button type="button" class="secondary salin">Salin</button></d
         <table>
           <thead><tr><th scope="col">Opsi</th><th scope="col">Arti</th></tr></thead>
           <tbody>
-            <tr><td><code>-m</code>, <code>--model &lt;nama&gt;</code></td><td>Model, bawaan <code>qwen3.5:9b</code> (variabel <code>LLMY_MODEL</code>); lihat <a href="#model">Model</a></td></tr>
+            <tr><td><code>-m</code>, <code>--model &lt;nama&gt;</code></td><td>Model, bawaan <code>qwen3.5:9b</code> atau profil bawaan (variabel <code>LLMY_MODEL</code>); lihat <a href="#model">Model</a></td></tr>
             <tr><td><code>--url &lt;url&gt;</code></td><td>Alamat untuk model yang dipilih</td></tr>
-            <tr><td><code>--ctx &lt;n&gt;</code></td><td>Ukuran context, minimal 4096 (<code>LLMY_CTX</code>). Bawaan 32768; OpenAI 128000, Claude paling banyak 200000</td></tr>
+            <tr><td><code>--api-key &lt;kunci&gt;</code></td><td>Kunci API hanya untuk sesi ini (tidak disimpan ke disk)</td></tr>
+            <tr><td><code>--ctx &lt;n&gt;</code></td><td>Ukuran context, minimal 4096 (<code>LLMY_CTX</code>). Bawaan 32768; OpenAI 128000, Claude dan Gemini paling banyak 200000</td></tr>
             <tr><td><code>--think</code></td><td>Aktifkan thinking bila model mendukung</td></tr>
             <tr><td><code>--effort &lt;e&gt;</code></td><td>Usaha model cloud: <code>low</code>, <code>medium</code>, <code>high</code>, <code>xhigh</code>, <code>max</code>. Tidak semua model mendukung</td></tr>
             <tr><td><code>-c</code>, <code>--continue</code></td><td>Lanjutkan sesi terakhir di folder ini</td></tr>
@@ -146,12 +147,16 @@ llmy</code></pre><button type="button" class="secondary salin">Salin</button></d
             <tr><td><code>qwen3.5:9b</code></td><td>Ollama, bawaan di komputer sendiri</td><td><code>LLMY_URL</code>, bawaan <code>http://localhost:11434</code></td></tr>
             <tr><td><code>anthropic/claude-opus-5-5</code></td><td>Claude API</td><td><code>ANTHROPIC_API_KEY</code>; alamat lain: <code>ANTHROPIC_BASE_URL</code></td></tr>
             <tr><td><code>openai/nama-model</code></td><td>OpenAI atau server yang kompatibel</td><td><code>OPENAI_API_KEY</code>; alamat lain: <code>OPENAI_BASE_URL</code></td></tr>
+            <tr><td><code>gemini/gemini-2.5-flash</code></td><td>Google Gemini API</td><td><code>GEMINI_API_KEY</code> atau <code>GOOGLE_API_KEY</code>; alamat lain: <code>GEMINI_BASE_URL</code></td></tr>
+            <tr><td><code>profil/nama-model</code></td><td>Profil tersimpan lewat <code>llmy api</code></td><td>Disimpan di <code>~/.config/llmy/api.json</code> (mode <code>0600</code>)</td></tr>
           </tbody>
         </table>
       </div>
-      <div class="perintah"><pre><code>export ANTHROPIC_API_KEY=kunci-anda
-llmy -m anthropic/claude-opus-5-5</code></pre><button type="button" class="secondary salin">Salin</button></div>
-      <p>Di dalam sesi, ganti dengan <code>/model anthropic/nama</code>; percakapannya tetap berlanjut. Kunci hanya dibaca dari variabel lingkungan, tidak disimpan, tidak diteruskan ke perintah <code>bash</code>, dan hanya dikirim lewat https (atau ke komputer sendiri).</p>
+      <div class="perintah"><pre><code>llmy api set anthropic --key kunci-anda --model claude-opus-5-5
+llmy api set deepseek --key kunci-deepseek --model deepseek-chat --default
+llmy api set gemini --key kunci-gemini --model gemini-2.5-flash</code></pre><button type="button" class="secondary salin">Salin</button></div>
+      <p>Kunci bisa dipasang lewat <code>llmy api set</code> (tersimpan lokal di <code>~/.config/llmy/api.json</code> dengan izin hanya pemilik), lewat variabel lingkungan (menimpa profil bawaan), atau khusus sesi aktif dengan <code>--api-key</code> maupun <code>/api session</code> tanpa menulis ke disk. Kunci tidak diteruskan ke perintah <code>bash</code>, tidak ikut ke berkas sesi, dan hanya dikirim lewat https (atau ke komputer sendiri).</p>
+      <p>Di dalam sesi, ganti provider dengan <code>/api use &lt;nama&gt;</code> atau <code>/model &lt;profil&gt;/&lt;nama&gt;</code>; percakapannya tetap berlanjut.</p>
       <p>Server di jaringan lokal seperti vLLM atau LM Studio bisa dipakai lewat <code>http://</code> tanpa kunci. Bila kunci terpasang, kunci itu tidak dikirim ke sana, dan isi percakapan tidak terenkripsi di jalan.</p>
       <div class="perintah"><pre><code>llmy -m openai/nama-model --url http://192.168.1.5:8000/v1</code></pre><button type="button" class="secondary salin">Salin</button></div>
       <p>DeepSeek, dengan kunci di <code>OPENAI_API_KEY</code>:</p>
@@ -189,7 +194,8 @@ llmy -m anthropic/claude-opus-5-5</code></pre><button type="button" class="secon
           <thead><tr><th scope="col">Ketik</th><th scope="col">Arti</th></tr></thead>
           <tbody>
             <tr><td><code>/help</code></td><td>Bantuan</td></tr>
-            <tr><td><code>/model [nama]</code></td><td>Lihat atau ganti model</td></tr>
+            <tr><td><code>/model [nama]</code></td><td>Lihat atau ganti model / profil</td></tr>
+            <tr><td><code>/api [perintah]</code></td><td>Lihat, atur, atau pilih API provider (<code>set</code>, <code>session</code>, <code>use</code>, <code>default</code>, <code>remove</code>)</td></tr>
             <tr><td><code>/think</code></td><td>Aktifkan atau matikan thinking</td></tr>
             <tr><td><code>/compact</code></td><td>Ringkas percakapan untuk menghemat context</td></tr>
             <tr><td><code>/remember [all] fakta</code></td><td>Simpan ke memori proyek, atau semua proyek dengan <code>all</code></td></tr>

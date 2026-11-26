@@ -113,6 +113,7 @@ llmy</code></pre><button type="button" class="secondary salin">Salin</button></d
             <tr><td><code>llmy --allow edit -p "perbaiki typo di README.md"</code></td><td>Sekali jalan dengan izin edit</td></tr>
             <tr><td><code>llmy --auto</code></td><td>Mode auto: semua disetujui tanpa tanya, kecuali path yang dijaga</td></tr>
             <tr><td><code>llmy -c</code></td><td>Melanjutkan sesi terakhir di folder ini</td></tr>
+            <tr><td><code>llmy setup</code></td><td>Menu untuk memasang provider gratis; lihat <a href="#gratis">Provider gratis</a></td></tr>
           </tbody>
         </table>
       </div>
@@ -166,6 +167,26 @@ llmy api set gemini --key kunci-gemini --model gemini-2.5-flash</code></pre><but
       <div class="perintah"><pre><code>llmy -m openai/deepseek-flash --url https://api.deepseek.com</code></pre><button type="button" class="secondary salin">Salin</button></div>
       <p class="alert warning">Dengan model cloud, pesan Anda dan isi file yang dibaca dikirim ke penyedianya dan dikenai biaya. llmy menampilkan alamat tujuannya saat mulai.</p>
       <p>Pada Claude Opus 5 dan 5.5, Sonnet 5.5, dan Fable 5, llmy mengaktifkan model cadangan: permintaan yang ditolak pengklasifikasi keamanan dicoba lagi oleh model lain yang dipilih Anthropic, dan hal itu diberitahukan bila terjadi di jawaban tersebut.</p>
+
+      <h3 id="gratis">Provider gratis</h3>
+      <p><code>llmy setup</code> membuka menu di terminal: pilih provider, tempel kunci (tidak tampil di layar), lalu pilih model. Kunci diperiksa dengan mengambil daftar model; model yang tidak mendukung tool disaring bila server memberi tahu, dan model yang disarankan ada di atas. Hasilnya disimpan seperti <code>llmy api set</code>.</p>
+      <div class="perintah"><pre><code>llmy setup
+llmy -m groq/openai/gpt-oss-120b</code></pre><button type="button" class="secondary salin">Salin</button></div>
+      <div class="table-wrap" role="region" aria-label="Provider gratis" tabindex="0">
+        <table>
+          <thead><tr><th scope="col">Profil</th><th scope="col">Provider</th><th scope="col">Batas gratis (November 2026)</th></tr></thead>
+          <tbody>
+            <tr><td><code>groq</code></td><td>Groq</td><td>Sangat cepat; 30 permintaan dan 8K token per menit</td></tr>
+            <tr><td><code>cerebras</code></td><td>Cerebras</td><td>Kredit uji coba; gpt-oss-120b hanya 5 permintaan per menit</td></tr>
+            <tr><td><code>openrouter</code></td><td>OpenRouter, hanya model <code>:free</code></td><td>20 permintaan per menit, 50 per hari; daftar <code>:free</code> berganti-ganti</td></tr>
+            <tr><td><code>mistral</code></td><td>Mistral AI</td><td>Tidak gratis lagi: API butuh aktivasi billing</td></tr>
+            <tr><td><code>cohere</code></td><td>Cohere</td><td>Kunci trial: 20 permintaan per menit, 1.000 per bulan</td></tr>
+            <tr><td><code>nvidia</code></td><td>NVIDIA NIM</td><td>Untuk pengembangan; sekitar 40 permintaan per menit. Daftar modelnya publik, jadi kunci baru diperiksa saat dipakai</td></tr>
+            <tr><td><code>cloudflare</code></td><td>Cloudflare Workers AI</td><td>10.000 neuron per hari; butuh Account ID dan API token</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="alert warning">Batas gratis kecil untuk agent yang memanggil model berkali-kali per tugas, jadi siapkan diri menerima galat 429. Pemakaian dengan kunci asli belum diuji untuk semua provider; tool call lewat endpoint OpenAI Cloudflare belum dipastikan dokumentasinya.</p>
 
       <h3 id="api-teks">API yang hanya bisa teks</h3>
       <p>Agent biasanya butuh API dengan <em>tool calling</em> native, yaitu model mengirim panggilan tool sebagai data terstruktur. llmy tidak mewajibkannya. Bila server hanya menerima dan membalas teks, model menulis panggilannya di dalam jawaban:</p>

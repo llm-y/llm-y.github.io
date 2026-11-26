@@ -136,6 +136,9 @@ llmy</code></pre><button type="button" class="secondary salin">Salin</button></d
             <tr><td><code>--tools &lt;cara&gt;</code></td><td><code>auto</code> (bawaan), <code>native</code>, atau <code>text</code> (<code>LLMY_TOOLS</code>); lihat <a href="#api-teks">API yang hanya bisa teks</a></td></tr>
             <tr><td><code>--allow edit,bash,memory,web</code></td><td>Tidak bertanya untuk yang disebut: edit, bash, menyimpan memori, tool internet. <code>all</code> sama dengan <code>--auto</code></td></tr>
             <tr><td><code>--verify &lt;perintah&gt;</code></td><td>Perintah pemeriksaan setelah edit (<code>LLMY_VERIFY</code>); <code>off</code> mematikan. Lihat <a href="#verifikasi">Verifikasi</a></td></tr>
+            <tr><td><code>--mode &lt;alur&gt;</code></td><td><code>loop</code> (bawaan) atau <code>bdi</code> (<code>LLMY_MODE</code>); lihat <a href="#bdi">Mode BDI</a></td></tr>
+            <tr><td><code>--plan &lt;model&gt;</code></td><td>Model perencana mode BDI, misalnya <code>groq/openai/gpt-oss-120b</code> (<code>LLMY_PLAN</code>). Bawaan: model utama</td></tr>
+            <tr><td><code>--fallback &lt;daftar&gt;</code></td><td>Model cadangan, dipisah koma (<code>LLMY_FALLBACK</code>). Dipakai bergiliran bila kuota habis atau server bermasalah</td></tr>
             <tr><td><code>--auto</code></td><td>Mode auto: setujui semua tanpa tanya, kecuali path di luar folder kerja, di <code>.git</code>, atau file rahasia; lihat <a href="#izin">Izin</a></td></tr>
             <tr><td><code>-p</code>, <code>--print &lt;prompt&gt;</code></td><td>Sekali jalan</td></tr>
             <tr><td><code>-h</code>, <code>-V</code></td><td>Bantuan dan versi</td></tr>
@@ -169,24 +172,34 @@ llmy api set gemini --key kunci-gemini --model gemini-2.5-flash</code></pre><but
       <p>Pada Claude Opus 5 dan 5.5, Sonnet 5.5, dan Fable 5, llmy mengaktifkan model cadangan: permintaan yang ditolak pengklasifikasi keamanan dicoba lagi oleh model lain yang dipilih Anthropic, dan hal itu diberitahukan bila terjadi di jawaban tersebut.</p>
 
       <h3 id="gratis">Provider gratis</h3>
-      <p><code>llmy setup</code> membuka menu di terminal: pilih provider, tempel kunci (tidak tampil di layar), lalu pilih model. Kunci diperiksa dengan mengambil daftar model; model yang tidak mendukung tool disaring bila server memberi tahu, dan model yang disarankan ada di atas. Hasilnya disimpan seperti <code>llmy api set</code>.</p>
+      <p><code>llmy setup</code> membuka menu di terminal: pilih provider, tempel kunci (tidak tampil di layar), lalu pilih model. Kunci juga bisa dibaca dari variabel lingkungan provider itu sendiri (kolom terakhir), misalnya dari file <code>.env</code> yang Anda muat; kunci dari env tidak disalin ke <code>api.json</code>. <code>OPENAI_API_KEY</code> tidak pernah dikirim ke provider ini. Kunci diperiksa dengan mengambil daftar model; model yang tidak mendukung tool disaring bila server memberi tahu, dan model yang disarankan ada di atas. Hasilnya disimpan seperti <code>llmy api set</code>.</p>
       <div class="perintah"><pre><code>llmy setup
 llmy -m groq/openai/gpt-oss-120b</code></pre><button type="button" class="secondary salin">Salin</button></div>
       <div class="table-wrap" role="region" aria-label="Provider gratis" tabindex="0">
         <table>
-          <thead><tr><th scope="col">Profil</th><th scope="col">Provider</th><th scope="col">Batas gratis (November 2026)</th></tr></thead>
+          <thead><tr><th scope="col">Profil</th><th scope="col">Provider</th><th scope="col">Batas gratis (November 2026)</th><th scope="col">Env kunci</th></tr></thead>
           <tbody>
-            <tr><td><code>groq</code></td><td>Groq</td><td>Sangat cepat; 30 permintaan dan 8K token per menit</td></tr>
-            <tr><td><code>cerebras</code></td><td>Cerebras</td><td>Kredit uji coba; gpt-oss-120b hanya 5 permintaan per menit</td></tr>
-            <tr><td><code>openrouter</code></td><td>OpenRouter, hanya model <code>:free</code></td><td>20 permintaan per menit, 50 per hari; daftar <code>:free</code> berganti-ganti</td></tr>
-            <tr><td><code>mistral</code></td><td>Mistral AI</td><td>Tidak gratis lagi: API butuh aktivasi billing</td></tr>
-            <tr><td><code>cohere</code></td><td>Cohere</td><td>Kunci trial: 20 permintaan per menit, 1.000 per bulan</td></tr>
-            <tr><td><code>nvidia</code></td><td>NVIDIA NIM</td><td>Untuk pengembangan; sekitar 40 permintaan per menit. Daftar modelnya publik, jadi kunci baru diperiksa saat dipakai</td></tr>
-            <tr><td><code>cloudflare</code></td><td>Cloudflare Workers AI</td><td>10.000 neuron per hari; butuh Account ID dan API token</td></tr>
+            <tr><td><code>groq</code></td><td>Groq</td><td>Sangat cepat; 30 permintaan dan 8K token per menit</td><td><code>GROQ_API_KEY</code></td></tr>
+            <tr><td><code>cerebras</code></td><td>Cerebras</td><td>Kredit uji coba; gpt-oss-120b hanya 5 permintaan per menit</td><td><code>CEREBRAS_API_KEY</code></td></tr>
+            <tr><td><code>openrouter</code></td><td>OpenRouter, hanya model <code>:free</code></td><td>20 permintaan per menit, 50 per hari; daftar <code>:free</code> berganti-ganti</td><td><code>OPENROUTER_API_KEY</code></td></tr>
+            <tr><td><code>mistral</code></td><td>Mistral AI</td><td>Tidak gratis lagi: API butuh aktivasi billing</td><td><code>MISTRAL_API_KEY</code></td></tr>
+            <tr><td><code>cohere</code></td><td>Cohere</td><td>Kunci trial: 20 permintaan per menit, 1.000 per bulan</td><td><code>COHERE_API_KEY</code></td></tr>
+            <tr><td><code>nvidia</code></td><td>NVIDIA NIM</td><td>Untuk pengembangan; sekitar 40 permintaan per menit. Daftar modelnya publik, jadi kunci baru diperiksa saat dipakai</td><td><code>NVIDIA_API_KEY</code></td></tr>
+            <tr><td><code>cloudflare</code></td><td>Cloudflare Workers AI</td><td>10.000 neuron per hari; butuh Account ID dan API token</td><td><code>CLOUDFLARE_API_TOKEN</code>, <code>CLOUDFLARE_ACCOUNT_ID</code></td></tr>
+            <tr><td><code>zai</code></td><td>Z.ai (GLM)</td><td>Gratis hanya <code>glm-4.7-flash</code> dan <code>glm-4.5-flash</code>; <code>glm-5.3-flash</code> dan <code>*-flashx</code> berbayar. Pakai Standard API Key</td><td><code>ZAI_API_KEY</code></td></tr>
+            <tr><td><code>bigmodel</code></td><td>Zhipu BigModel (Tiongkok)</td><td>GLM Flash gratis; batas paralel menurut level akun</td><td><code>ZHIPU_API_KEY</code></td></tr>
+            <tr><td><code>gemini</code></td><td>Google AI Studio</td><td>Batas harian kecil; data tier gratis dipakai melatih model Google</td><td><code>GEMINI_API_KEY</code></td></tr>
+            <tr><td><code>kilo</code></td><td>Kilo Gateway</td><td>Tanpa akun: model <code>:free</code>, 200 permintaan per jam per IP; sebagian model melatih dari prompt</td><td>opsional</td></tr>
+            <tr><td><code>sambanova</code></td><td>SambaNova Cloud</td><td>Gratis selama tanpa metode bayar: 20 permintaan per hari per model</td><td><code>SAMBANOVA_API_KEY</code></td></tr>
+            <tr><td><code>ovh</code></td><td>OVHcloud AI Endpoints</td><td>Tanpa akun: 2 permintaan per menit per model</td><td>opsional</td></tr>
+            <tr><td><code>modelscope</code></td><td>ModelScope (Tiongkok)</td><td>Butuh akun Alibaba Cloud terverifikasi; non-komersial</td><td><code>MODELSCOPE_API_KEY</code></td></tr>
+            <tr><td><code>llm7</code></td><td>LLM7.io</td><td>Tanpa akun; batas tidak dipublikasikan dan ketat</td><td>opsional</td></tr>
           </tbody>
         </table>
       </div>
-      <p class="alert warning">Batas gratis kecil untuk agent yang memanggil model berkali-kali per tugas, jadi siapkan diri menerima galat 429. Pemakaian dengan kunci asli belum diuji untuk semua provider; tool call lewat endpoint OpenAI Cloudflare belum dipastikan dokumentasinya.</p>
+      <p class="alert warning">Batas gratis kecil untuk agent yang memanggil model berkali-kali per tugas, jadi siapkan diri menerima galat 429. Pakai <code>--fallback</code> agar llmy pindah ke provider lain saat kuota habis. Pemakaian dengan kunci asli belum diuji untuk semua provider; tool call lewat endpoint OpenAI Cloudflare, OVH, dan ModelScope belum dipastikan.</p>
+      <div class="perintah"><pre><code>llmy -m groq/openai/gpt-oss-120b --fallback cerebras/gpt-oss-120b,kilo/kilo-auto/free
+llmy api fallback groq/openai/gpt-oss-120b,zai/glm-4.7-flash</code></pre><button type="button" class="secondary salin">Salin</button></div>
 
       <h3 id="api-teks">API yang hanya bisa teks</h3>
       <p>Agent biasanya butuh API dengan <em>tool calling</em> native, yaitu model mengirim panggilan tool sebagai data terstruktur. llmy tidak mewajibkannya. Bila server hanya menerima dan membalas teks, model menulis panggilannya di dalam jawaban:</p>
@@ -222,6 +235,7 @@ llmy -m groq/openai/gpt-oss-120b</code></pre><button type="button" class="second
             <tr><td><code>/api [perintah]</code></td><td>Lihat, atur, atau pilih API provider (<code>set</code>, <code>session</code>, <code>use</code>, <code>default</code>, <code>remove</code>)</td></tr>
             <tr><td><code>/think</code></td><td>Aktifkan atau matikan thinking</td></tr>
             <tr><td><code>/auto</code> atau <kbd>Shift</kbd>+<kbd>Tab</kbd></td><td>Nyalakan atau matikan mode auto. Berlaku seketika, juga saat llmy sedang bekerja; footer menampilkan <code>auto</code></td></tr>
+            <tr><td><code>/mode [loop|bdi]</code></td><td>Lihat atau ganti alur kerja; lihat <a href="#bdi">Mode BDI</a></td></tr>
             <tr><td><code>/compact</code></td><td>Ringkas percakapan untuk menghemat context</td></tr>
             <tr><td><code>/remember [all] fakta</code></td><td>Simpan ke memori proyek, atau semua proyek dengan <code>all</code></td></tr>
             <tr><td><code>/memory</code></td><td>Lihat memori</td></tr>
@@ -278,6 +292,17 @@ llmy -m groq/openai/gpt-oss-120b</code></pre><button type="button" class="second
         <li>Empat pemeriksaan gagal berturut-turut tanpa kemajuan (jumlah galat tidak berkurang) menghentikan giliran. Refactor lintas file yang galatnya terus berkurang tidak dihentikan. Ketik "lanjutkan" untuk mencoba lagi.</li>
         <li>Pemeriksaan yang perintahnya tidak terpasang (exit 127) dimatikan untuk sesi itu.</li>
       </ul>
+
+      <h3 id="bdi">Mode BDI</h3>
+      <p>Bawaannya satu loop dengan satu model: model memilih tool, llmy menjalankannya, sampai model selesai. Dengan <code>--mode bdi</code> (atau <code>/mode bdi</code>, atau <code>llmy api mode bdi</code>), kerjanya dibagi ke beberapa agent:</p>
+      <ol>
+        <li><strong>Perencana</strong> memecah permintaan menjadi beberapa tujuan kecil (desire), masing-masing satu atau dua file, beserta urutannya. Dipanggil dengan suhu rendah dan keluaran JSON, tanpa tool. Bisa model lain lewat <code>--plan</code>, misalnya model cloud gratis yang besar, sementara pekerjanya model lokal.</li>
+        <li><strong>Deliberasi</strong> memilih tujuan berikutnya bila ada beberapa kandidat atau ada pendekatan yang sudah gagal. Satu kandidat tanpa kegagalan dipilih tanpa memanggil model.</li>
+        <li><strong>Pekerja</strong> mengerjakan satu tujuan dengan context baru: hanya permintaan Anda, tujuan itu, yang sudah selesai, galat terakhir, dan isi file targetnya. Tool dan izinnya sama dengan mode biasa.</li>
+        <li><strong>llmy sendiri</strong> menilai hasilnya dari verifikasi setelah edit. Gagal dicoba lagi sampai tiga kali dengan galatnya; bila buntu atau isinya berulang, file dikembalikan ke isi sebelum tujuan itu (file baru dihapus), pendekatan yang gagal dicatat, dan tujuan direncanakan ulang sekali sebelum ditinggalkan.</li>
+      </ol>
+      <p>Sesi hanya menyimpan permintaan Anda dan ringkasan hasil, bukan percakapan pekerja. Pada <code>-p</code>, tujuan yang tidak tercapai membuat kode keluar 1.</p>
+      <p class="alert warning">Pada pengukuran dengan qwen3.5:9b (dua refactor Rust lintas file, lima kali), mode BDI dan mode loop sama-sama benar 9 dari 10. Untuk tugas sekecil itu BDI belum lebih baik, jadi bawaan tetap loop. Perubahan lewat <code>bash</code> tidak ikut dikembalikan.</p>
 
       <h3 id="internet">Tool internet</h3>
       <p>Tool ini memakai klien HTTP bawaan llmy, tanpa program luar. Isi permintaan dikirim ke layanan yang bersangkutan, jadi setiap panggilan meminta izin.</p>

@@ -285,12 +285,14 @@ llmy api fallback groq/openai/gpt-oss-120b,zai/glm-4.7-flash</code></pre><button
             <tr><td>Go (<code>go.mod</code>)</td><td><code>go build ./... &amp;&amp; go vet ./...</code></td><td><code>*.go</code>, <code>go.mod</code></td></tr>
             <tr><td>TypeScript</td><td>skrip <code>typecheck</code> di <code>package.json</code>, atau <code>tsc --noEmit</code></td><td><code>*.ts</code>, <code>*.tsx</code>, <code>tsconfig.json</code></td></tr>
             <tr><td>Python</td><td><code>python3 -m py_compile</code> untuk file yang diubah (sintaks saja)</td><td><code>*.py</code></td></tr>
+            <tr><td>JavaScript (mis. croot.js)</td><td><code>node --check</code> tiap file yang diubah, juga sebagai modul ES (sintaks saja, tidak dijalankan)</td><td><code>*.js</code>, <code>*.mjs</code>, <code>*.cjs</code></td></tr>
+            <tr><td>LaTeX</td><td>Kompilasi draft file utama (yang punya <code>\documentclass</code> dan memuat file itu) dengan <code>pdflatex</code>, atau <code>xelatex</code>/<code>lualatex</code> bila dipakai; tanpa shell escape, keluaran ke folder sementara</td><td><code>*.tex</code>, <code>*.sty</code>, <code>*.cls</code></td></tr>
             <tr><td>Lainnya</td><td><code>--verify "make test"</code> atau <code>LLMY_VERIFY</code></td><td>Setiap file</td></tr>
           </tbody>
         </table>
       </div>
       <ul>
-        <li>Build bisa menjalankan kode proyek (<code>build.rs</code>, skrip npm), jadi pemeriksaan bawaan ditanya seperti <code>bash</code>. <code>py_compile</code> tidak menjalankan kode, jadi tidak ditanya. Pengecualian lain: mode auto atau <code>--allow bash</code>. Pilih "selalu" agar tidak ditanya lagi; menolak mematikannya untuk sesi itu. Perintah yang Anda tulis sendiri dengan <code>--verify</code> dijalankan tanpa tanya. Pada <code>-p</code> tanpa izin, pemeriksaan dilewati.</li>
+        <li>Build bisa menjalankan kode proyek (<code>build.rs</code>, skrip npm), jadi pemeriksaan bawaan ditanya seperti <code>bash</code>. <code>py_compile</code>, <code>node --check</code>, dan kompilasi draft LaTeX tanpa shell escape tidak menjalankan kode proyek, jadi tidak ditanya. Galat LaTeX diringkas menjadi baris <code>file.tex:baris: pesan</code> dan <code>l.N</code>, bukan log ratusan baris. Pengecualian lain: mode auto atau <code>--allow bash</code>. Pilih "selalu" agar tidak ditanya lagi; menolak mematikannya untuk sesi itu. Perintah yang Anda tulis sendiri dengan <code>--verify</code> dijalankan tanpa tanya. Pada <code>-p</code> tanpa izin, pemeriksaan dilewati.</li>
         <li>Isi file yang gagal diperiksa diingat. Bila model menulis isi yang persis sama lagi, tulisan itu ditolak, sampai ada pemeriksaan yang lulus.</li>
         <li>Empat pemeriksaan gagal berturut-turut tanpa kemajuan (jumlah galat tidak berkurang) menghentikan giliran. Refactor lintas file yang galatnya terus berkurang tidak dihentikan. Ketik "lanjutkan" untuk mencoba lagi.</li>
         <li>Pemeriksaan yang perintahnya tidak terpasang (exit 127) dimatikan untuk sesi itu.</li>
@@ -299,10 +301,11 @@ llmy api fallback groq/openai/gpt-oss-120b,zai/glm-4.7-flash</code></pre><button
       <h3 id="bdi">Mode BDI</h3>
       <p>Bawaannya satu loop dengan satu model: model memilih tool, llmy menjalankannya, sampai model selesai. Dengan <code>--mode bdi</code> (atau <code>/mode bdi</code>, atau <code>llmy api mode bdi</code>), kerjanya dibagi ke beberapa agent:</p>
       <ol>
-        <li><strong>Perencana</strong> memecah permintaan menjadi beberapa tujuan kecil (desire), masing-masing satu atau dua file, beserta urutannya. Dipanggil dengan suhu rendah dan keluaran JSON, tanpa tool. Bisa model lain lewat <code>--plan</code>, misalnya model cloud gratis yang besar, sementara pekerjanya model lokal.</li>
+        <li><strong>Perencana</strong> membaca peta proyek (signature fungsi, tipe, dan kelas beserta nomor barisnya) lalu memecah permintaan menjadi beberapa tujuan kecil (desire), masing-masing satu atau dua file, beserta urutannya. Dipanggil dengan suhu rendah dan keluaran JSON, tanpa tool. Bisa model lain lewat <code>--plan</code>, misalnya model cloud gratis yang besar, sementara pekerjanya model lokal.</li>
         <li><strong>Deliberasi</strong> memilih tujuan berikutnya bila ada beberapa kandidat atau ada pendekatan yang sudah gagal. Satu kandidat tanpa kegagalan dipilih tanpa memanggil model.</li>
         <li><strong>Pekerja</strong> mengerjakan satu tujuan dengan context baru: hanya permintaan Anda, tujuan itu, yang sudah selesai, galat terakhir, dan isi file targetnya. Tool dan izinnya sama dengan mode biasa.</li>
         <li><strong>llmy sendiri</strong> menilai hasilnya dari verifikasi setelah edit. Gagal dicoba lagi sampai tiga kali dengan galatnya; bila buntu atau isinya berulang, file dikembalikan ke isi sebelum tujuan itu (file baru dihapus), pendekatan yang gagal dicatat, dan tujuan direncanakan ulang sekali sebelum ditinggalkan.</li>
+        <li><strong>Eskalasi</strong>: sebelum direncanakan ulang, perencana menerima galat dan diff yang gagal, lalu mencari akar masalahnya. Diagnosis dan langkah barunya dipakai pekerja berikutnya. Pasangan yang cocok: <code>--plan</code> model cloud gratis sebagai arsitek, model lokal sebagai pekerja.</li>
       </ol>
       <p>Sesi hanya menyimpan permintaan Anda dan ringkasan hasil, bukan percakapan pekerja. Pada <code>-p</code>, tujuan yang tidak tercapai membuat kode keluar 1.</p>
       <p class="alert warning">Pada pengukuran dengan qwen3.5:9b (dua refactor Rust lintas file, lima kali), mode BDI dan mode loop sama-sama benar 9 dari 10. Untuk tugas sekecil itu BDI belum lebih baik, jadi bawaan tetap loop.</p>
@@ -318,7 +321,8 @@ llmy api fallback groq/openai/gpt-oss-120b,zai/glm-4.7-flash</code></pre><button
 
       <h3 id="alat">Lain-lain tentang tool</h3>
       <ul>
-        <li><code>read</code> dengan <code>symbol</code> langsung membuka definisi fungsi, method, struct, atau kelas, tanpa menebak nomor baris. Bila namanya ada di beberapa file, llmy menyebutkan semuanya.</li>
+        <li><code>read</code> dengan <code>symbol</code> langsung membuka definisi tanpa menebak nomor baris: fungsi, struct, atau kelas di Rust, Python, dan JavaScript (termasuk <code>const f = () =&gt;</code>); judul bagian, <code>\label</code>, atau <code>\newcommand</code> di LaTeX; kunci sitasi di BibTeX. Bila namanya ada di beberapa file, llmy menyebutkan semuanya.</li>
+        <li>Bahasa utama llmy: Rust, JavaScript (croot.js), LaTeX, dan Python. Pengenal definisinya diukur terhadap parser resmi (<code>syn</code>, <code>acorn</code>, <code>ast</code>) dan cocok 100%. Go juga diukur (100%); bahasa lain memakai pola yang sama tetapi belum diukur.</li>
         <li><code>edit</code> dengan <code>edits</code> mengganti beberapa bagian satu file sekaligus. Semua bagian harus cocok; bila satu gagal, file tidak diubah.</li>
         <li>File yang diubah <code>bash</code> (misalnya <code>sed -i</code>, <code>mv</code>, generator kode) dikenali dengan memindai folder kerja sebelum dan sesudah perintah. File itu diverifikasi seperti hasil <code>edit</code>, ikut <code>/undo</code> dan rollback mode BDI, dan daftarnya diberikan ke model. Folder hasil build dan file di atas 1 MB tidak disimpan isinya.</li>
       </ul>

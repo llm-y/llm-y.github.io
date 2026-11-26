@@ -113,6 +113,7 @@ llmy</code></pre><button type="button" class="secondary salin">Salin</button></d
             <tr><td><code>llmy --allow edit -p "perbaiki typo di README.md"</code></td><td>Sekali jalan dengan izin edit</td></tr>
             <tr><td><code>llmy --auto</code></td><td>Mode auto: semua disetujui tanpa tanya, kecuali path yang dijaga</td></tr>
             <tr><td><code>llmy -c</code></td><td>Melanjutkan sesi terakhir di folder ini</td></tr>
+            <tr><td><code>llmy stats</code></td><td>Ringkasan metrik lokal per giliran (langkah, tool gagal, pemeriksaan dan uji gagal) per model. Hanya angka, tanpa isi percakapan; <code>LLMY_METRICS=off</code> mematikan</td></tr>
             <tr><td><code>llmy setup</code></td><td>Menu untuk memasang provider gratis; lihat <a href="#gratis">Provider gratis</a></td></tr>
           </tbody>
         </table>
@@ -296,6 +297,8 @@ llmy api fallback groq/openai/gpt-oss-120b,zai/glm-4.7-flash</code></pre><button
         <li>Isi file yang gagal diperiksa diingat. Bila model menulis isi yang persis sama lagi, tulisan itu ditolak, sampai ada pemeriksaan yang lulus.</li>
         <li>Empat pemeriksaan gagal berturut-turut tanpa kemajuan (jumlah galat tidak berkurang) menghentikan giliran. Refactor lintas file yang galatnya terus berkurang tidak dihentikan. Ketik "lanjutkan" untuk mencoba lagi.</li>
         <li>Pemeriksaan yang perintahnya tidak terpasang (exit 127) dimatikan untuk sesi itu.</li>
+        <li>Bila pemeriksaan gagal, llmy menempelkan potongan kode di sekitar lokasi galat (mis. <code>src/a.rs:12</code>), jadi model tidak perlu membaca file lagi.</li>
+        <li><strong>Uji di akhir giliran.</strong> Saat model menyatakan selesai dan ada file yang berubah, llmy menjalankan uji proyek: <code>cargo test</code>, <code>pytest</code> atau <code>python3 -m unittest</code> (bila ada <code>test_*.py</code>), <code>npm test</code> atau <code>node --test</code>, dan untuk LaTeX dua kali kompilasi untuk menemukan <code>\ref</code> yang tidak terdefinisi. Bila gagal, hasilnya dikembalikan ke model, paling banyak dua kali; setelah itu giliran berhenti dengan galat. Uji menjalankan kode proyek, jadi ditanya seperti <code>bash</code> (kecuali LaTeX). Pada pengukuran 16 tugas di Rust, Python, JavaScript, dan LaTeX dengan qwen3.5:9b, ini (bersama potongan kode di lokasi galat) menaikkan keberhasilan dari 33/48 ke 45/48 dan menurunkan "mengaku selesai padahal salah" dari 15/48 ke 3/48.</li>
       </ul>
 
       <h3 id="bdi">Mode BDI</h3>
@@ -316,7 +319,7 @@ llmy api fallback groq/openai/gpt-oss-120b,zai/glm-4.7-flash</code></pre><button
         <li>Satu tingkat saja: sub-agent tidak bisa membuat sub-agent lagi.</li>
         <li><code>--sub &lt;model&gt;</code> menjalankan sub-agent dengan model lain, misalnya model besar sebagai pengarah dan model lokal sebagai pelaksana.</li>
         <li>Percakapan sub-agent tidak disimpan ke sesi; yang tersimpan hasil <code>task</code>-nya.</li>
-        <li>Sub-agent berjalan satu per satu, karena semuanya bekerja di folder yang sama.</li>
+        <li>Sub-agent yang menulis berjalan satu per satu, karena semuanya bekerja di folder yang sama. Sub-agent <strong>baca-saja</strong> (<code>readonly</code>) hanya mendapat <code>read</code>, <code>grep</code>, <code>head</code>, dan <code>tail</code>; beberapa sekaligus dalam satu jawaban dijalankan paralel.</li>
       </ul>
 
       <h3 id="alat">Lain-lain tentang tool</h3>
@@ -324,6 +327,9 @@ llmy api fallback groq/openai/gpt-oss-120b,zai/glm-4.7-flash</code></pre><button
         <li><code>read</code> dengan <code>symbol</code> langsung membuka definisi tanpa menebak nomor baris: fungsi, struct, atau kelas di Rust, Python, dan JavaScript (termasuk <code>const f = () =&gt;</code>); judul bagian, <code>\label</code>, atau <code>\newcommand</code> di LaTeX; kunci sitasi di BibTeX. Bila namanya ada di beberapa file, llmy menyebutkan semuanya.</li>
         <li>Bahasa utama llmy: Rust, JavaScript (croot.js), LaTeX, dan Python. Pengenal definisinya diukur terhadap parser resmi (<code>syn</code>, <code>acorn</code>, <code>ast</code>) dan cocok 100%. Go juga diukur (100%); bahasa lain memakai pola yang sama tetapi belum diukur.</li>
         <li><code>edit</code> dengan <code>edits</code> mengganti beberapa bagian satu file sekaligus. Semua bagian harus cocok; bila satu gagal, file tidak diubah.</li>
+        <li><code>edit</code> toleran terhadap salah indentasi dan spasi di ujung baris: bila teks <code>old</code> tidak cocok persis tetapi cocok per baris dengan selisih indentasi yang sama, dan hanya di satu tempat, perubahan diterapkan dengan indentasi file. Bila tetap tidak cocok, galatnya menampilkan isi file saat ini di sekitar baris yang mirip.</li>
+        <li>Argumen tool yang cacat (dibungkus <code>```json</code>, koma di akhir, kutip tunggal, ganti baris mentah di dalam string, <code>True</code>/<code>None</code> ala Python) diperbaiki sebelum ditolak.</li>
+        <li>Opsional (<code>LLMY_MAP=on</code>): pesan pertama sesi diawali <strong>peta proyek</strong> (signature dan nomor barisnya), dan giliran berikutnya diawali catatan file yang sudah diubah serta status pemeriksaan terakhir. Tidak aktif secara bawaan karena pada pengukuran 16 tugas tidak menaikkan keberhasilan (43/48 vs 45/48 tanpa peta).</li>
         <li>File yang diubah <code>bash</code> (misalnya <code>sed -i</code>, <code>mv</code>, generator kode) dikenali dengan memindai folder kerja sebelum dan sesudah perintah. File itu diverifikasi seperti hasil <code>edit</code>, ikut <code>/undo</code> dan rollback mode BDI, dan daftarnya diberikan ke model. Folder hasil build dan file di atas 1 MB tidak disimpan isinya.</li>
       </ul>
 

@@ -188,6 +188,26 @@ llmy api set gemini --key kunci-gemini --model gemini-2.5-flash</code></pre><but
         <li>Mode teks bergantung pada kepatuhan model. Dalam uji kecil di server yang membuang tool, qwen3.5 9b berhasil 3 dari 3, gemma4 12b 1 dari 1, nemotron 4b 1 dari 2, dan qwen2.5 3b 0 dari 2.</li>
       </ul>
 
+      <h3 id="tools-pencarian">Tools Pencarian dan Akses Internet</h3>
+      <p>llmy dilengkapi dengan tools pencarian khusus untuk agen AI:</p>
+      <div class="table-wrap" role="region" aria-label="Tools pencarian" tabindex="0">
+        <table>
+          <thead><tr><th scope="col">Tool</th><th scope="col">API</th><th scope="col">Kegunaan</th></tr></thead>
+          <tbody>
+            <tr><td><code>tavily()</code></td><td><a href="https://app.tavily.com/" target="_blank" rel="noopener">Tavily Search API</a></td><td>Pencarian internet khusus untuk agen AI, dengan hasil terstruktur, kutipan (sources), dan validasi konten. Parameter: <code>query</code>, <code>topic</code>, <code>max_tokens</code>, <code>days</code>.</td></tr>
+            <tr><td><code>exa()</code></td><td><a href="https://exa.ai/" target="_blank" rel="noopener">Exa API</a></td><td>Pencarian semantik berbasis makna (semantic search) untuk menemukan halaman yang relevan secara kontekstual. Parameter: <code>query</code>, <code>num_results</code>, <code>category</code>.</td></tr>
+            <tr><td><code>linkup()</code></td><td><a href="https://www.linkup.com/" target="_blank" rel="noopener">LinkUp API</a></td><td>Extraction data dari halaman web. Parameter: <code>url</code>, <code>tags</code>.</td></tr>
+            <tr><td><code>github()</code></td><td><a href="https://docs.github.com/en/rest" target="_blank" rel="noopener">GitHub REST API</a></td><td>Akses ke GitHub: cari repositori, user, kode. Khususnya bisa membaca isi repo lewat <a href="https://gitingest.com/" target="_blank" rel="noopener">gitingest.com</a> atau <a href="https://uithub.com/" target="_blank" rel="noopener">uithub.com</a> untuk teks bersih tanpa HTML.</td></tr>
+            <tr><td><code>read()</code>, <code>grep()</code></td><td>Curl internal</td><td>Membaca file, mencari isi file. Tidak menggunakan httpreq tapi curl via subprocess untuk menghindari dependency eksternal.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="alert warning">Tools pencarian memerlukan API key masing-masing. Pasang dengan:</p>
+      <div class="perintah"><pre><code>llmy api set tavily --key kunci-tavily-anda
+llmy api set exa --key kunci-exa-anda
+llmy api set linkup --key kunci-linkup-anda
+# GitHub tidak perlu API key untuk akses publik, tapi bisa pakai token untuk akses privat</code></pre><button type="button" class="secondary salin">Salin</button></div>
+
       <h3 id="perintah">Perintah dan tombol</h3>
       <div class="table-wrap" role="region" aria-label="Perintah dan tombol" tabindex="0">
         <table>

@@ -134,6 +134,7 @@ llmy</code></pre><button type="button" class="secondary salin">Salin</button></d
             <tr><td><code>--no-session</code></td><td>Jangan simpan sesi</td></tr>
             <tr><td><code>--tools &lt;cara&gt;</code></td><td><code>auto</code> (bawaan), <code>native</code>, atau <code>text</code> (<code>LLMY_TOOLS</code>); lihat <a href="#api-teks">API yang hanya bisa teks</a></td></tr>
             <tr><td><code>--allow edit,bash,memory,web</code></td><td>Tidak bertanya untuk yang disebut: edit, bash, menyimpan memori, tool internet. <code>all</code> sama dengan <code>--auto</code></td></tr>
+            <tr><td><code>--verify &lt;perintah&gt;</code></td><td>Perintah pemeriksaan setelah edit (<code>LLMY_VERIFY</code>); <code>off</code> mematikan. Lihat <a href="#verifikasi">Verifikasi</a></td></tr>
             <tr><td><code>--auto</code></td><td>Mode auto: setujui semua tanpa tanya, kecuali path di luar folder kerja, di <code>.git</code>, atau file rahasia; lihat <a href="#izin">Izin</a></td></tr>
             <tr><td><code>-p</code>, <code>--print &lt;prompt&gt;</code></td><td>Sekali jalan</td></tr>
             <tr><td><code>-h</code>, <code>-V</code></td><td>Bantuan dan versi</td></tr>
@@ -235,6 +236,27 @@ llmy api set gemini --key kunci-gemini --model gemini-2.5-flash</code></pre><but
       <p>Mode auto (<code>--auto</code>, <code>/auto</code>, atau <kbd>Shift</kbd>+<kbd>Tab</kbd>) menyetujui edit, <code>bash</code>, memori, dan tool internet tanpa bertanya. Path di luar folder kerja, di <code>.git</code>, atau file rahasia tetap ditanya; pada <code>-p</code> tindakan itu ditolak.</p>
       <p>Satu giliran tidak dibatasi jumlah langkahnya. Giliran berakhir bila model selesai, Anda menekan <kbd>Esc</kbd>, izin ditolak, atau delapan tool gagal berturut-turut (agar model yang macet tidak berputar selamanya).</p>
       <p>Pilihan "selalu" untuk <code>bash</code> hanya berlaku untuk perintah yang persis sama, dan semua pilihan "selalu" hilang saat llmy ditutup. Pada mode <code>-p</code>, tindakan tanpa izin menghentikan pekerjaan dengan kode keluar 1, kecuali menyimpan memori: itu hanya dilewati.</p>
+
+      <h3 id="verifikasi">Verifikasi setelah edit</h3>
+      <p>Setelah langkah yang mengubah file, llmy sendiri menjalankan pemeriksaan proyek dan menempelkan hasilnya ke hasil edit, sehingga model langsung melihat galat build. Model tidak perlu ingat menjalankan build.</p>
+      <div class="table-wrap" role="region" aria-label="Pemeriksaan bawaan" tabindex="0">
+        <table>
+          <thead><tr><th scope="col">Proyek</th><th scope="col">Perintah</th><th scope="col">Dipicu oleh</th></tr></thead>
+          <tbody>
+            <tr><td>Rust (<code>Cargo.toml</code>)</td><td><code>cargo check --all-targets</code></td><td><code>*.rs</code>, <code>Cargo.toml</code></td></tr>
+            <tr><td>Go (<code>go.mod</code>)</td><td><code>go build ./... &amp;&amp; go vet ./...</code></td><td><code>*.go</code>, <code>go.mod</code></td></tr>
+            <tr><td>TypeScript</td><td>skrip <code>typecheck</code> di <code>package.json</code>, atau <code>tsc --noEmit</code></td><td><code>*.ts</code>, <code>*.tsx</code>, <code>tsconfig.json</code></td></tr>
+            <tr><td>Python</td><td><code>python3 -m py_compile</code> untuk file yang diubah (sintaks saja)</td><td><code>*.py</code></td></tr>
+            <tr><td>Lainnya</td><td><code>--verify "make test"</code> atau <code>LLMY_VERIFY</code></td><td>Setiap file</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul>
+        <li>Build bisa menjalankan kode proyek (<code>build.rs</code>, skrip npm), jadi pemeriksaan bawaan ditanya seperti <code>bash</code>. <code>py_compile</code> tidak menjalankan kode, jadi tidak ditanya. Pengecualian lain: mode auto atau mode auto atau <code>--allow bash</code>. Pilih "selalu" agar tidak ditanya lagi; menolak mematikannya untuk sesi itu. Perintah yang Anda tulis sendiri dengan <code>--verify</code> dijalankan tanpa tanya. Pada <code>-p</code> tanpa izin, pemeriksaan dilewati.</li>
+        <li>Isi file yang gagal diperiksa diingat. Bila model menulis isi yang persis sama lagi, tulisan itu ditolak, sampai ada pemeriksaan yang lulus.</li>
+        <li>Empat pemeriksaan gagal berturut-turut tanpa kemajuan (jumlah galat tidak berkurang) menghentikan giliran. Refactor lintas file yang galatnya terus berkurang tidak dihentikan. Ketik "lanjutkan" untuk mencoba lagi.</li>
+        <li>Pemeriksaan yang perintahnya tidak terpasang (exit 127) dimatikan untuk sesi itu.</li>
+      </ul>
 
       <h3 id="internet">Tool internet</h3>
       <p>Tool ini memakai klien HTTP bawaan llmy, tanpa program luar. Isi permintaan dikirim ke layanan yang bersangkutan, jadi setiap panggilan meminta izin.</p>

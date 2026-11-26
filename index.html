@@ -111,6 +111,7 @@ llmy</code></pre><button type="button" class="secondary salin">Salin</button></d
             <tr><td><code>llmy -p "jelaskan proyek ini"</code></td><td>Sekali jalan; jawaban ke stdout, jejak tool ke stderr</td></tr>
             <tr><td><code>git diff | llmy -p "tinjau perubahan ini"</code></td><td>Membaca masukan dari pipa</td></tr>
             <tr><td><code>llmy --allow edit -p "perbaiki typo di README.md"</code></td><td>Sekali jalan dengan izin edit</td></tr>
+            <tr><td><code>llmy --auto</code></td><td>Mode auto: semua disetujui tanpa tanya, kecuali path yang dijaga</td></tr>
             <tr><td><code>llmy -c</code></td><td>Melanjutkan sesi terakhir di folder ini</td></tr>
           </tbody>
         </table>
@@ -132,7 +133,8 @@ llmy</code></pre><button type="button" class="secondary salin">Salin</button></d
             <tr><td><code>--sessions</code></td><td>Daftar sesi di folder ini</td></tr>
             <tr><td><code>--no-session</code></td><td>Jangan simpan sesi</td></tr>
             <tr><td><code>--tools &lt;cara&gt;</code></td><td><code>auto</code> (bawaan), <code>native</code>, atau <code>text</code> (<code>LLMY_TOOLS</code>); lihat <a href="#api-teks">API yang hanya bisa teks</a></td></tr>
-            <tr><td><code>--allow edit,bash,memory</code></td><td>Tidak bertanya untuk yang disebut: edit, bash, menyimpan memori</td></tr>
+            <tr><td><code>--allow edit,bash,memory,web</code></td><td>Tidak bertanya untuk yang disebut: edit, bash, menyimpan memori, tool internet. <code>all</code> sama dengan <code>--auto</code></td></tr>
+            <tr><td><code>--auto</code></td><td>Mode auto: setujui semua tanpa tanya, kecuali path di luar folder kerja, di <code>.git</code>, atau file rahasia; lihat <a href="#izin">Izin</a></td></tr>
             <tr><td><code>-p</code>, <code>--print &lt;prompt&gt;</code></td><td>Sekali jalan</td></tr>
             <tr><td><code>-h</code>, <code>-V</code></td><td>Bantuan dan versi</td></tr>
           </tbody>
@@ -197,6 +199,7 @@ llmy api set gemini --key kunci-gemini --model gemini-2.5-flash</code></pre><but
             <tr><td><code>/model [nama]</code></td><td>Lihat atau ganti model / profil</td></tr>
             <tr><td><code>/api [perintah]</code></td><td>Lihat, atur, atau pilih API provider (<code>set</code>, <code>session</code>, <code>use</code>, <code>default</code>, <code>remove</code>)</td></tr>
             <tr><td><code>/think</code></td><td>Aktifkan atau matikan thinking</td></tr>
+            <tr><td><code>/auto</code> atau <kbd>Shift</kbd>+<kbd>Tab</kbd></td><td>Nyalakan atau matikan mode auto. Berlaku seketika, juga saat llmy sedang bekerja; footer menampilkan <code>auto</code></td></tr>
             <tr><td><code>/compact</code></td><td>Ringkas percakapan untuk menghemat context</td></tr>
             <tr><td><code>/remember [all] fakta</code></td><td>Simpan ke memori proyek, atau semua proyek dengan <code>all</code></td></tr>
             <tr><td><code>/memory</code></td><td>Lihat memori</td></tr>
@@ -221,13 +224,42 @@ llmy api set gemini --key kunci-gemini --model gemini-2.5-flash</code></pre><but
             <tr><td><code>edit</code>, <code>write</code></td><td>Ditanya, dengan diff</td><td>Selalu ditanya</td></tr>
             <tr><td><code>remember</code></td><td>Ditanya, dengan diff</td><td>Memori semua proyek: ditanya</td></tr>
             <tr><td><code>bash</code></td><td>Ditanya, perintah tampil utuh</td><td>Tidak dibatasi folder</td></tr>
+            <tr><td><code>head</code>, <code>tail</code>, <code>essence</code></td><td>Langsung</td><td>Seperti <code>read</code></td></tr>
+            <tr><td><a href="#internet">Tool internet</a></td><td colspan="2">Ditanya, dengan alamat dan isi permintaan. "Selalu" berlaku untuk semua tool internet selama sesi</td></tr>
           </tbody>
         </table>
       </div>
       <p class="alert warning">Izin ini bukan sandbox. Perintah <code>bash</code> yang Anda setujui berjalan dengan hak akses Anda dan bisa menjangkau seluruh komputer.</p>
       <p><code>grep</code> mencari isi file atau nama file. File tersembunyi, symlink, dan folder hasil build seperti <code>target</code> dan <code>node_modules</code> dilewati. Bila model memakai <code>bash</code> hanya untuk melihat atau mencari file, llmy mengarahkannya ke <code>read</code> atau <code>grep</code> sebelum bertanya kepada Anda, paling banyak tiga kali per giliran.</p>
       <p>File rahasia dikenali dari namanya, misalnya <code>.env</code>, <code>id_rsa</code>, <code>*.pem</code>, dan <code>credentials.json</code>. Pengenalan ini tidak lengkap; jangan mengandalkannya sebagai satu-satunya pelindung.</p>
+      <p>Mode auto (<code>--auto</code>, <code>/auto</code>, atau <kbd>Shift</kbd>+<kbd>Tab</kbd>) menyetujui edit, <code>bash</code>, memori, dan tool internet tanpa bertanya. Path di luar folder kerja, di <code>.git</code>, atau file rahasia tetap ditanya; pada <code>-p</code> tindakan itu ditolak.</p>
+      <p>Satu giliran tidak dibatasi jumlah langkahnya. Giliran berakhir bila model selesai, Anda menekan <kbd>Esc</kbd>, izin ditolak, atau delapan tool gagal berturut-turut (agar model yang macet tidak berputar selamanya).</p>
       <p>Pilihan "selalu" untuk <code>bash</code> hanya berlaku untuk perintah yang persis sama, dan semua pilihan "selalu" hilang saat llmy ditutup. Pada mode <code>-p</code>, tindakan tanpa izin menghentikan pekerjaan dengan kode keluar 1, kecuali menyimpan memori: itu hanya dilewati.</p>
+
+      <h3 id="internet">Tool internet</h3>
+      <p>Tool ini memakai klien HTTP bawaan llmy, tanpa program luar. Isi permintaan dikirim ke layanan yang bersangkutan, jadi setiap panggilan meminta izin.</p>
+      <div class="table-wrap" role="region" aria-label="Tool internet" tabindex="0">
+        <table>
+          <thead><tr><th scope="col">Tool</th><th scope="col">Kegunaan</th><th scope="col">Kunci (variabel env)</th></tr></thead>
+          <tbody>
+            <tr><td><code>curl</code></td><td>Request HTTP ke URL apa saja; HTML diubah jadi teks kecuali <code>raw</code>. Pengalihan diikuti, tetapi header tidak dibawa ke host lain</td><td>Tidak perlu</td></tr>
+            <tr><td><code>github</code></td><td>GitHub REST API (JSON): cari repo, isi file, issue, pull request, rilis, kontributor. URL <code>github.com</code> diterjemahkan ke API</td><td><code>GITHUB_TOKEN</code>, opsional</td></tr>
+            <tr><td><code>openalex</code></td><td>Cari artikel ilmiah: judul, tahun, penulis, DOI, sitasi, abstrak</td><td>Tidak perlu</td></tr>
+            <tr><td><code>doi</code></td><td>Metadata DOI dari Crossref</td><td>Tidak perlu</td></tr>
+            <tr><td><code>spider</code></td><td>Jelajahi situs: halaman awal dan tautan di host yang sama (kedalaman sampai 3, paling banyak 30 halaman)</td><td>Tidak perlu</td></tr>
+            <tr><td><code>tavily</code></td><td>Pencarian web dengan jawaban singkat dan sumber</td><td><code>TAVILY_API_KEY</code></td></tr>
+            <tr><td><code>exa</code></td><td>Pencarian web semantik</td><td><code>EXA_API_KEY</code></td></tr>
+            <tr><td><code>linkup</code></td><td>Pencarian web dengan sumber</td><td><code>LINKUP_API_KEY</code></td></tr>
+            <tr><td><code>firecrawl</code></td><td>Ambil satu halaman sebagai markdown, atau jelajahi situs</td><td><code>FIRECRAWL_API_KEY</code></td></tr>
+            <tr><td><code>scopus</code></td><td>Cari artikel di Scopus dengan jumlah sitasi</td><td><code>SCOPUS_API_KEY</code></td></tr>
+            <tr><td><code>brightdata</code></td><td>Ambil halaman lewat Bright Data Web Unlocker</td><td><code>BRIGHTDATA_API_KEY</code> dan <code>BRIGHTDATA_ZONE</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Tool yang butuh kunci hanya ditawarkan ke model bila kuncinya ada di env, dan kunci itu tidak terlihat oleh perintah <code>bash</code>. Tool lokal <code>head</code> dan <code>tail</code> membaca awal atau akhir file; <code>essence</code> mengambil URL, email, DOI, dan kata kunci dari teks tanpa jaringan.</p>
+      <div class="perintah"><pre><code>export TAVILY_API_KEY=kunci-anda
+llmy --allow web -p "cari berita terbaru tentang Rust 2026"</code></pre><button type="button" class="secondary salin">Salin</button></div>
+      <p class="alert warning">tavily, exa, linkup, firecrawl, scopus, dan brightdata ditulis menurut dokumentasi masing-masing layanan, tetapi belum diuji dengan kunci asli.</p>
 
       <h3 id="agents">Instruksi proyek</h3>
       <p>Tulis aturan proyek di <code>AGENTS.md</code> (atau <code>CLAUDE.md</code> bila tidak ada). llmy membaca file itu dari akar git sampai folder kerja, ditambah instruksi pribadi di <code>~/.config/llmy/AGENTS.md</code>. Totalnya dibatasi sekitar 8.000 byte; yang terdekat dengan folder kerja didahulukan.</p>

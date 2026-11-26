@@ -252,7 +252,7 @@ llmy api set gemini --key kunci-gemini --model gemini-2.5-flash</code></pre><but
         </table>
       </div>
       <ul>
-        <li>Build bisa menjalankan kode proyek (<code>build.rs</code>, skrip npm), jadi pemeriksaan bawaan ditanya seperti <code>bash</code>. <code>py_compile</code> tidak menjalankan kode, jadi tidak ditanya. Pengecualian lain: mode auto atau mode auto atau <code>--allow bash</code>. Pilih "selalu" agar tidak ditanya lagi; menolak mematikannya untuk sesi itu. Perintah yang Anda tulis sendiri dengan <code>--verify</code> dijalankan tanpa tanya. Pada <code>-p</code> tanpa izin, pemeriksaan dilewati.</li>
+        <li>Build bisa menjalankan kode proyek (<code>build.rs</code>, skrip npm), jadi pemeriksaan bawaan ditanya seperti <code>bash</code>. <code>py_compile</code> tidak menjalankan kode, jadi tidak ditanya. Pengecualian lain: mode auto atau <code>--allow bash</code>. Pilih "selalu" agar tidak ditanya lagi; menolak mematikannya untuk sesi itu. Perintah yang Anda tulis sendiri dengan <code>--verify</code> dijalankan tanpa tanya. Pada <code>-p</code> tanpa izin, pemeriksaan dilewati.</li>
         <li>Isi file yang gagal diperiksa diingat. Bila model menulis isi yang persis sama lagi, tulisan itu ditolak, sampai ada pemeriksaan yang lulus.</li>
         <li>Empat pemeriksaan gagal berturut-turut tanpa kemajuan (jumlah galat tidak berkurang) menghentikan giliran. Refactor lintas file yang galatnya terus berkurang tidak dihentikan. Ketik "lanjutkan" untuk mencoba lagi.</li>
         <li>Pemeriksaan yang perintahnya tidak terpasang (exit 127) dimatikan untuk sesi itu.</li>

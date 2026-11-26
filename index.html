@@ -139,6 +139,7 @@ llmy</code></pre><button type="button" class="secondary salin">Salin</button></d
             <tr><td><code>--mode &lt;alur&gt;</code></td><td><code>loop</code> (bawaan) atau <code>bdi</code> (<code>LLMY_MODE</code>); lihat <a href="#bdi">Mode BDI</a></td></tr>
             <tr><td><code>--plan &lt;model&gt;</code></td><td>Model perencana mode BDI, misalnya <code>groq/openai/gpt-oss-120b</code> (<code>LLMY_PLAN</code>). Bawaan: model utama</td></tr>
             <tr><td><code>--fallback &lt;daftar&gt;</code></td><td>Model cadangan, dipisah koma (<code>LLMY_FALLBACK</code>). Dipakai bergiliran bila kuota habis atau server bermasalah</td></tr>
+            <tr><td><code>--sub &lt;model&gt;</code></td><td>Model sub-agent (tool <code>task</code>), misalnya model lokal yang cepat (<code>LLMY_SUB</code>). Bawaan: model utama</td></tr>
             <tr><td><code>--auto</code></td><td>Mode auto: setujui semua tanpa tanya, kecuali path di luar folder kerja, di <code>.git</code>, atau file rahasia; lihat <a href="#izin">Izin</a></td></tr>
             <tr><td><code>-p</code>, <code>--print &lt;prompt&gt;</code></td><td>Sekali jalan</td></tr>
             <tr><td><code>-h</code>, <code>-V</code></td><td>Bantuan dan versi</td></tr>
@@ -236,6 +237,7 @@ llmy api fallback groq/openai/gpt-oss-120b,zai/glm-4.7-flash</code></pre><button
             <tr><td><code>/think</code></td><td>Aktifkan atau matikan thinking</td></tr>
             <tr><td><code>/auto</code> atau <kbd>Shift</kbd>+<kbd>Tab</kbd></td><td>Nyalakan atau matikan mode auto. Berlaku seketika, juga saat llmy sedang bekerja; footer menampilkan <code>auto</code></td></tr>
             <tr><td><code>/mode [loop|bdi]</code></td><td>Lihat atau ganti alur kerja; lihat <a href="#bdi">Mode BDI</a></td></tr>
+            <tr><td><code>/undo</code></td><td>Kembalikan file yang diubah giliran terakhir, termasuk lewat <code>bash</code>. Bisa diulang sampai 20 giliran ke belakang</td></tr>
             <tr><td><code>/compact</code></td><td>Ringkas percakapan untuk menghemat context</td></tr>
             <tr><td><code>/remember [all] fakta</code></td><td>Simpan ke memori proyek, atau semua proyek dengan <code>all</code></td></tr>
             <tr><td><code>/memory</code></td><td>Lihat memori</td></tr>
@@ -261,6 +263,7 @@ llmy api fallback groq/openai/gpt-oss-120b,zai/glm-4.7-flash</code></pre><button
             <tr><td><code>remember</code></td><td>Ditanya, dengan diff</td><td>Memori semua proyek: ditanya</td></tr>
             <tr><td><code>bash</code></td><td>Ditanya, perintah tampil utuh</td><td>Tidak dibatasi folder</td></tr>
             <tr><td><code>head</code>, <code>tail</code>, <code>essence</code></td><td>Langsung</td><td>Seperti <code>read</code></td></tr>
+            <tr><td><code>task</code></td><td colspan="2">Langsung; tiap tool yang dipakai sub-agent ditanya seperti biasa. Lihat <a href="#subagent">Sub-agent</a></td></tr>
             <tr><td><a href="#internet">Tool internet</a></td><td colspan="2">Ditanya, dengan alamat dan isi permintaan. "Selalu" berlaku untuk semua tool internet selama sesi</td></tr>
           </tbody>
         </table>
@@ -302,7 +305,23 @@ llmy api fallback groq/openai/gpt-oss-120b,zai/glm-4.7-flash</code></pre><button
         <li><strong>llmy sendiri</strong> menilai hasilnya dari verifikasi setelah edit. Gagal dicoba lagi sampai tiga kali dengan galatnya; bila buntu atau isinya berulang, file dikembalikan ke isi sebelum tujuan itu (file baru dihapus), pendekatan yang gagal dicatat, dan tujuan direncanakan ulang sekali sebelum ditinggalkan.</li>
       </ol>
       <p>Sesi hanya menyimpan permintaan Anda dan ringkasan hasil, bukan percakapan pekerja. Pada <code>-p</code>, tujuan yang tidak tercapai membuat kode keluar 1.</p>
-      <p class="alert warning">Pada pengukuran dengan qwen3.5:9b (dua refactor Rust lintas file, lima kali), mode BDI dan mode loop sama-sama benar 9 dari 10. Untuk tugas sekecil itu BDI belum lebih baik, jadi bawaan tetap loop. Perubahan lewat <code>bash</code> tidak ikut dikembalikan.</p>
+      <p class="alert warning">Pada pengukuran dengan qwen3.5:9b (dua refactor Rust lintas file, lima kali), mode BDI dan mode loop sama-sama benar 9 dari 10. Untuk tugas sekecil itu BDI belum lebih baik, jadi bawaan tetap loop.</p>
+
+      <h3 id="subagent">Sub-agent</h3>
+      <p>Di mode biasa, model bisa menyerahkan sub-tugas ke sub-agent lewat tool <code>task</code>: misalnya satu modul dari pekerjaan besar, atau pencarian luas yang rinciannya tidak perlu masuk percakapan utama. Sub-agent mulai dengan context baru, memakai tool dan izin yang sama, bekerja sampai selesai, lalu mengembalikan laporan singkat beserta daftar file yang diubahnya. Model utama hanya menerima laporan itu, jadi context-nya tetap kecil.</p>
+      <ul>
+        <li>Satu tingkat saja: sub-agent tidak bisa membuat sub-agent lagi.</li>
+        <li><code>--sub &lt;model&gt;</code> menjalankan sub-agent dengan model lain, misalnya model besar sebagai pengarah dan model lokal sebagai pelaksana.</li>
+        <li>Percakapan sub-agent tidak disimpan ke sesi; yang tersimpan hasil <code>task</code>-nya.</li>
+        <li>Sub-agent berjalan satu per satu, karena semuanya bekerja di folder yang sama.</li>
+      </ul>
+
+      <h3 id="alat">Lain-lain tentang tool</h3>
+      <ul>
+        <li><code>read</code> dengan <code>symbol</code> langsung membuka definisi fungsi, method, struct, atau kelas, tanpa menebak nomor baris. Bila namanya ada di beberapa file, llmy menyebutkan semuanya.</li>
+        <li><code>edit</code> dengan <code>edits</code> mengganti beberapa bagian satu file sekaligus. Semua bagian harus cocok; bila satu gagal, file tidak diubah.</li>
+        <li>File yang diubah <code>bash</code> (misalnya <code>sed -i</code>, <code>mv</code>, generator kode) dikenali dengan memindai folder kerja sebelum dan sesudah perintah. File itu diverifikasi seperti hasil <code>edit</code>, ikut <code>/undo</code> dan rollback mode BDI, dan daftarnya diberikan ke model. Folder hasil build dan file di atas 1 MB tidak disimpan isinya.</li>
+      </ul>
 
       <h3 id="internet">Tool internet</h3>
       <p>Tool ini memakai klien HTTP bawaan llmy, tanpa program luar. Isi permintaan dikirim ke layanan yang bersangkutan, jadi setiap panggilan meminta izin.</p>

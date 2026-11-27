@@ -184,7 +184,6 @@ llmy -m groq/openai/gpt-oss-120b</code></pre><button type="button" class="second
             <tr><td><code>groq</code></td><td>Groq</td><td>Sangat cepat; 30 permintaan dan 8K token per menit</td><td><code>GROQ_API_KEY</code></td></tr>
             <tr><td><code>cerebras</code></td><td>Cerebras</td><td>Kredit uji coba; gpt-oss-120b hanya 5 permintaan per menit</td><td><code>CEREBRAS_API_KEY</code></td></tr>
             <tr><td><code>openrouter</code></td><td>OpenRouter, hanya model <code>:free</code></td><td>20 permintaan per menit, 50 per hari; daftar <code>:free</code> berganti-ganti</td><td><code>OPENROUTER_API_KEY</code></td></tr>
-            <tr><td><code>mistral</code></td><td>Mistral AI</td><td>Tidak gratis lagi: API butuh aktivasi billing</td><td><code>MISTRAL_API_KEY</code></td></tr>
             <tr><td><code>cohere</code></td><td>Cohere</td><td>Kunci trial: 20 permintaan per menit, 1.000 per bulan</td><td><code>COHERE_API_KEY</code></td></tr>
             <tr><td><code>nvidia</code></td><td>NVIDIA NIM</td><td>Untuk pengembangan; sekitar 40 permintaan per menit. Daftar modelnya publik, jadi kunci baru diperiksa saat dipakai</td><td><code>NVIDIA_API_KEY</code></td></tr>
             <tr><td><code>cloudflare</code></td><td>Cloudflare Workers AI</td><td>10.000 neuron per hari; butuh Account ID dan API token</td><td><code>CLOUDFLARE_API_TOKEN</code>, <code>CLOUDFLARE_ACCOUNT_ID</code></td></tr>
@@ -192,14 +191,10 @@ llmy -m groq/openai/gpt-oss-120b</code></pre><button type="button" class="second
             <tr><td><code>bigmodel</code></td><td>Zhipu BigModel (Tiongkok)</td><td>GLM Flash gratis; batas paralel menurut level akun</td><td><code>ZHIPU_API_KEY</code></td></tr>
             <tr><td><code>gemini</code></td><td>Google AI Studio</td><td>Batas harian kecil; data tier gratis dipakai melatih model Google</td><td><code>GEMINI_API_KEY</code></td></tr>
             <tr><td><code>kilo</code></td><td>Kilo Gateway</td><td>Tanpa akun: model <code>:free</code>, 200 permintaan per jam per IP; sebagian model melatih dari prompt</td><td>opsional</td></tr>
-            <tr><td><code>sambanova</code></td><td>SambaNova Cloud</td><td>Kunci baru ditolak (402) sampai metode bayar ditambahkan (diuji 2026-11-27)</td><td><code>SAMBANOVA_API_KEY</code></td></tr>
-            <tr><td><code>ovh</code></td><td>OVHcloud AI Endpoints</td><td>Tanpa akun: server membalas 429 dengan batas 1 permintaan per tahun (diuji 2026-11-27)</td><td>opsional</td></tr>
-            <tr><td><code>modelscope</code></td><td>ModelScope (Tiongkok)</td><td>Butuh akun Alibaba Cloud terverifikasi; non-komersial</td><td><code>MODELSCOPE_API_KEY</code></td></tr>
-            <tr><td><code>llm7</code></td><td>LLM7.io</td><td>Tanpa akun; batas tidak dipublikasikan dan ketat</td><td>opsional</td></tr>
           </tbody>
         </table>
       </div>
-      <p class="alert warning">Batas gratis kecil untuk agent yang memanggil model berkali-kali per tugas, jadi siapkan diri menerima galat 429. Pakai <code>--fallback</code> agar llmy pindah ke provider lain saat kuota habis. Pemakaian dengan kunci asli belum diuji untuk semua provider; tool call lewat endpoint OpenAI Cloudflare, OVH, dan ModelScope belum dipastikan.</p>
+      <p class="alert warning">Batas gratis kecil untuk agent yang memanggil model berkali-kali per tugas, jadi siapkan diri menerima galat 429. Pakai <code>--fallback</code> agar llmy pindah ke provider lain saat kuota habis. Tool call dengan kunci asli lulus diuji untuk kesepuluh provider ini (27 November 2026).</p>
       <div class="perintah"><pre><code>llmy -m groq/openai/gpt-oss-120b --fallback cerebras/gpt-oss-120b,kilo/kilo-auto/free
 llmy api fallback groq/openai/gpt-oss-120b,zai/glm-4.7-flash</code></pre><button type="button" class="secondary salin">Salin</button></div>
 

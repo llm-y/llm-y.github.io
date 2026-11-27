@@ -162,14 +162,14 @@ llmy</code></pre><button type="button" class="secondary salin">Salin</button></d
         </table>
       </div>
       <div class="perintah"><pre><code>llmy api set anthropic --key kunci-anda --model claude-opus-5-5
-llmy api set deepseek --key kunci-deepseek --model deepseek-chat --default
+llmy api set deepseek --key kunci-deepseek --model deepseek-flash --default
 llmy api set gemini --key kunci-gemini --model gemini-2.5-flash</code></pre><button type="button" class="secondary salin">Salin</button></div>
       <p>Kunci bisa dipasang lewat <code>llmy api set</code> (tersimpan lokal di <code>~/.config/llmy/api.json</code> dengan izin hanya pemilik), lewat variabel lingkungan (menimpa profil bawaan), atau khusus sesi aktif dengan <code>--api-key</code> maupun <code>/api session</code> tanpa menulis ke disk. Kunci tidak diteruskan ke perintah <code>bash</code>, tidak ikut ke berkas sesi, dan hanya dikirim lewat https (atau ke komputer sendiri).</p>
       <p>Di dalam sesi, ganti provider dengan <code>/api use &lt;nama&gt;</code> atau <code>/model &lt;profil&gt;/&lt;nama&gt;</code>; percakapannya tetap berlanjut.</p>
       <p>Server di jaringan lokal seperti vLLM atau LM Studio bisa dipakai lewat <code>http://</code> tanpa kunci. Bila kunci terpasang, kunci itu tidak dikirim ke sana, dan isi percakapan tidak terenkripsi di jalan.</p>
       <div class="perintah"><pre><code>llmy -m openai/nama-model --url http://192.168.1.5:8000/v1</code></pre><button type="button" class="secondary salin">Salin</button></div>
-      <p>DeepSeek, dengan kunci di <code>OPENAI_API_KEY</code>:</p>
-      <div class="perintah"><pre><code>llmy -m openai/deepseek-flash --url https://api.deepseek.com</code></pre><button type="button" class="secondary salin">Salin</button></div>
+      <p>DeepSeek, dengan kunci di <code>DEEPSEEK_API_KEY</code> (atau lewat menu <code>llmy setup</code>):</p>
+      <div class="perintah"><pre><code>llmy -m deepseek/deepseek-flash</code></pre><button type="button" class="secondary salin">Salin</button></div>
       <p class="alert warning">Dengan model cloud, pesan Anda dan isi file yang dibaca dikirim ke penyedianya dan dikenai biaya. llmy menampilkan alamat tujuannya saat mulai.</p>
       <p>Pada Claude Opus 5 dan 5.5, Sonnet 5.5, dan Fable 5, llmy mengaktifkan model cadangan: permintaan yang ditolak pengklasifikasi keamanan dicoba lagi oleh model lain yang dipilih Anthropic, dan hal itu diberitahukan bila terjadi di jawaban tersebut.</p>
 
@@ -191,10 +191,11 @@ llmy -m groq/openai/gpt-oss-120b</code></pre><button type="button" class="second
             <tr><td><code>bigmodel</code></td><td>Zhipu BigModel (Tiongkok)</td><td>GLM Flash gratis; batas paralel menurut level akun</td><td><code>ZHIPU_API_KEY</code></td></tr>
             <tr><td><code>gemini</code></td><td>Google AI Studio</td><td>Batas harian kecil; data tier gratis dipakai melatih model Google</td><td><code>GEMINI_API_KEY</code></td></tr>
             <tr><td><code>kilo</code></td><td>Kilo Gateway</td><td>Tanpa akun: model <code>:free</code>, 200 permintaan per jam per IP; sebagian model melatih dari prompt</td><td>opsional</td></tr>
+            <tr><td><code>deepseek</code></td><td>DeepSeek</td><td><strong>Berbayar</strong>, tanpa tier gratis: isi saldo dulu. <code>deepseek-flash</code> murah dan separuh harga di luar jam sibuk</td><td><code>DEEPSEEK_API_KEY</code></td></tr>
           </tbody>
         </table>
       </div>
-      <p class="alert warning">Batas gratis kecil untuk agent yang memanggil model berkali-kali per tugas, jadi siapkan diri menerima galat 429. Pakai <code>--fallback</code> agar llmy pindah ke provider lain saat kuota habis. Tool call dengan kunci asli lulus diuji untuk kesepuluh provider ini (27 November 2026).</p>
+      <p class="alert warning">Batas gratis kecil untuk agent yang memanggil model berkali-kali per tugas, jadi siapkan diri menerima galat 429. Pakai <code>--fallback</code> agar llmy pindah ke provider lain saat kuota habis. Tool call dengan kunci asli lulus diuji untuk semua provider gratis di tabel ini (27 November 2026); DeepSeek belum diuji dengan kunci asli.</p>
       <div class="perintah"><pre><code>llmy -m groq/openai/gpt-oss-120b --fallback cerebras/gpt-oss-120b,kilo/kilo-auto/free
 llmy api fallback groq/openai/gpt-oss-120b,zai/glm-4.7-flash</code></pre><button type="button" class="secondary salin">Salin</button></div>
 

@@ -53,6 +53,7 @@ main() {
         *":$dir:"*) ;;
         *) echo "Tambahkan ke PATH: export PATH=\"$dir:\$PATH\"" ;;
     esac
+    command -v git > /dev/null || echo "llmy membutuhkan git. Pasang dulu: sudo apt install git (Linux) atau xcode-select --install (macOS)"
     command -v ollama > /dev/null || echo "Ollama belum ada. Pasang dari https://ollama.com/download, lalu: ollama pull qwen3.5:9b"
 }
 

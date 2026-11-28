@@ -37,8 +37,8 @@
     }
     $env:Path += ";$dir"
     Write-Host "Terpasang: $(& "$dir\llmy.exe" --version) di $dir"
-    if (-not (Get-Command bash -ErrorAction SilentlyContinue) -and -not (Test-Path "$env:ProgramFiles\Git\bin\bash.exe")) {
-        Write-Host 'Tool bash butuh Git for Windows: https://git-scm.com/download/win'
+    if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
+        Write-Host 'llmy membutuhkan Git for Windows (git dan tool bash): winget install --id Git.Git -e, atau https://git-scm.com/download/win'
     }
     if (-not (Get-Command ollama -ErrorAction SilentlyContinue)) {
         Write-Host 'Ollama belum ada. Pasang dari https://ollama.com/download, lalu: ollama pull qwen3.5:9b'
